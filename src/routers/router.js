@@ -6,6 +6,8 @@ const Login = React.lazy(() => import("../features/authen/pages/Login.js"));
 const Search = React.lazy(() => import("../features//search/Search.js"));
 const Home = React.lazy(() => import("../features//shared/pages/Home.js"));
 const Test = React.lazy(() => import("../features//search/Test.js"));
+const ServiceManagement = React.lazy(() => import("../features/main/pages/MainPage"))
+
 const SpeechToText = React.lazy(() =>
   import("../features//search/SpeechToText.js")
 );
@@ -14,6 +16,7 @@ const SpeechToText = React.lazy(() =>
 const publicRoute = [
   { path: "/sign-up", name: "SignUp", element: <SignUp /> },
   { path: "/login", name: "Login", element: <Login /> },
+  { path: "/service-management", name: "Service Management", element: <ServiceManagement /> }
 ];
 
 // Những route dùng khi đã đăng nhập
