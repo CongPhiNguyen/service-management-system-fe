@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import Routers from "./routers";
-import Header from "./features/shared/components/Header";
+import HeaderMain from "./features/shared/components/Header";
 import "./App.css";
 import "antd/dist/antd.min.css";
 import { store } from "./store";
@@ -11,10 +11,10 @@ function App() {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <div className="header-container">
-          <Header />
-        </div>
         <div className="page-container">
+          <div className="header-container">
+            <HeaderMain />
+          </div>
           <Routers />
         </div>
       </BrowserRouter>

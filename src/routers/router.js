@@ -1,21 +1,11 @@
 import React from "react";
 
-const SignUp = React.lazy(() => import("../features/authen/pages/Signup.js"));
-const Login = React.lazy(() => import("../features/authen/pages/Login.js"));
-
-const Search = React.lazy(() => import("../features//search/Search.js"));
-const Home = React.lazy(() => import("../features//shared/pages/Home.js"));
-const Test = React.lazy(() => import("../features//search/Test.js"));
 const ServiceManagement = React.lazy(() => import("../features/main/pages/MainPage"))
-
-const SpeechToText = React.lazy(() =>
-  import("../features//search/SpeechToText.js")
-);
+const AddServicesPage = React.lazy(() => import("../features/AddService/pages/AddServicesPage"))
 
 // Những route chỉ truy xuất khi chưa đăng nhập
 const publicRoute = [
-  { path: "/sign-up", name: "SignUp", element: <SignUp /> },
-  { path: "/login", name: "Login", element: <Login /> },
+  { path: "/add-service", name: "Add Service", element: <AddServicesPage /> },
   { path: "/service-management", name: "Service Management", element: <ServiceManagement /> }
 ];
 
@@ -24,10 +14,7 @@ const protectedRoute = [];
 
 // route dùng cho mọi trường hợp
 const commonRoute = [
-  { path: "/search", name: "Search", element: <Search /> },
-  { path: "/test", name: "Test", element: <Test /> },
-  { path: "/speech-2-text", name: "SpeechToText", element: <SpeechToText /> },
-  { path: "/", name: "Home", element: <Home /> },
+
 ];
 
 // Route dùng cho manager

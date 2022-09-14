@@ -13,6 +13,7 @@
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "postcss": "^8.4.16",
+    "rc-tween-one": "^3.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-player": "^2.10.1",

@@ -1,7 +1,6 @@
 import React from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import routes from "./router";
-// import { useSelector } from "react-redux";
 
 const Routers = () => {
   return (
@@ -40,7 +39,6 @@ const Routers = () => {
             )
           );
         })}
-        {/* <Route path="*" element={<Navigate to={"/404-not-found"} />} /> */}
       </Routes>
     </React.Suspense>
   );
