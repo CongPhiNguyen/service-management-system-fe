@@ -18,15 +18,6 @@ export default function Header() {
         <NavLink className={({ isActive }) => makeClass(isActive)} to="/search">
           Search
         </NavLink>
-        <NavLink className={({ isActive }) => makeClass(isActive)} to="/test">
-          Test
-        </NavLink>
-        <NavLink
-          className={({ isActive }) => makeClass(isActive)}
-          to="/speech-2-text"
-        >
-          Speech to text
-        </NavLink>
       </div>
       <div className="right-nav">
         <NavLink className={({ isActive }) => makeClass(isActive)} to="/login">

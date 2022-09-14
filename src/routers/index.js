@@ -40,7 +40,6 @@ const Routers = () => {
             )
           );
         })}
-        {/* <Route path="*" element={<Navigate to={"/404-not-found"} />} /> */}
       </Routes>
     </React.Suspense>
   );
