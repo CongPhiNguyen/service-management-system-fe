@@ -22,6 +22,7 @@ const protectedRoute = [];
 // route dùng cho mọi trường hợp
 const commonRoute = [
   { path: "/search", name: "Search", element: <Search /> },
+  { path: "/test", name: "Search", element: <Test /> },
   { path: "/", name: "Home", element: <Home /> },
 ];
 
