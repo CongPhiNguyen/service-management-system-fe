@@ -138,8 +138,6 @@ const InputDependency = (props) => {
                         onSearch={onSearch}
                         placeholder="input here"
                         onChange={handleInputChange}
-                        onBlur={handleInputConfirm}
-                    // onPressEnter={handleInputConfirm}
                     />
                 </>
             )}
