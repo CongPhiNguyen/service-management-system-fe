@@ -3,9 +3,10 @@ import { Tag, AutoComplete } from 'antd';
 import { TweenOneGroup } from 'rc-tween-one';
 import React, { useEffect, useRef, useState } from 'react';
 import RemoveAccents from '../../../helper/RemoveAccents';
+import { get } from '../../../api/axios';
+import URL from "../../../api/config"
 
 const InputDependency = (props) => {
-    const [tags, setTags] = useState(['Tag 1', 'Tag 2', 'Tag 3']);
     const [inputVisible, setInputVisible] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const inputRef = useRef(null);
@@ -15,16 +16,27 @@ const InputDependency = (props) => {
         }
     }, [inputVisible]);
 
+
+    const [listService, setListService] = useState([])
     useEffect(() => {
-        if (props.serviceDependencies)
-            setTags(props.serviceDependencies)
-        console.log(props.serviceDependencies);
-    }, [props.serviceDependencies]);
+        const getAllService = async () => {
+            get(URL.URL_GET_ALL_SERVICE)
+                .then(res => {
+                    setListService(res.data.services.map(name => name.serviceName))
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+        getAllService()
+    }, [])
+
+
 
     const handleClose = (removedTag) => {
-        const newTags = tags.filter((tag) => tag !== removedTag);
-        console.log(newTags);
-        setTags(newTags);
+        const newTags = props.serviceDependencies.filter((tag) => tag !== removedTag);
+        props.setServiceDependencies(newTags)
+
     };
 
     const showInput = () => {
@@ -36,10 +48,8 @@ const InputDependency = (props) => {
     };
 
     const handleInputConfirm = () => {
-        if (inputValue && tags.indexOf(inputValue) === -1) {
-            const arr = [...tags, inputValue]
-            console.log(arr)
-            setTags(arr)
+        if (inputValue && props.serviceDependencies.indexOf(inputValue) === -1) {
+            const arr = [...props.serviceDependencies, inputValue]
             props.setServiceDependencies(arr)
         }
         setInputVisible(false);
@@ -47,14 +57,8 @@ const InputDependency = (props) => {
     };
 
     const [options, setOptions] = useState([]);
-    const listService = [
-        "Login",
-        "Register",
-        "Load album",
-        "LoUpload albumgin"
-    ]
+
     const onSearch = (searchText) => {
-        console.log(searchText)
         let results = []
         listService.forEach(value => {
             if (RemoveAccents(value).includes(RemoveAccents(searchText))) {
@@ -69,9 +73,8 @@ const InputDependency = (props) => {
     };
 
     const onSelect = (data) => {
-        if (data && tags.indexOf(data) === -1) {
-            const arr = [...tags, data]
-            setTags(arr)
+        if (data && props.serviceDependencies.indexOf(data) === -1) {
+            const arr = [...props.serviceDependencies, data]
             props.setServiceDependencies(arr)
         }
         setInputVisible(false);
@@ -106,7 +109,7 @@ const InputDependency = (props) => {
                     appear={false}
                 >
                     {
-                        tags.map((tag, index) => {
+                        props.serviceDependencies.map((tag, index) => {
                             return (
                                 <Tag
                                     closable
