@@ -1,5 +1,5 @@
 {
-  "name": "dictionary-app",
+  "name": "services-management-system-fe-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,9 +12,14 @@
     "autoprefixer": "^10.4.8",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
+    "brace": "^0.11.1",
+    "d3": "^7.6.1",
+    "jsoneditor-react": "2.0.0",
     "postcss": "^8.4.16",
     "rc-tween-one": "^3.0.6",
     "react": "^18.2.0",
+    "react-ace": "9.5.0",
+    "react-d3-library": "^1.1.8",
     "react-dom": "^18.2.0",
     "react-player": "^2.10.1",
     "react-redux": "^8.0.2",
