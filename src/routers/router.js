@@ -6,7 +6,9 @@ const ServiceManagement = React.lazy(() =>
 const AddServicesPage = React.lazy(() =>
   import("../features/AddService/pages/AddServicesPage")
 );
-
+const Search = React.lazy(() => import("../features//search/Search.js"));
+const Home = React.lazy(() => import("../features//shared/pages/Home.js"));
+const Test = React.lazy(() => import("../features//search/Test.js"));
 // Những route chỉ truy xuất khi chưa đăng nhập
 const publicRoute = [
   { path: "/add-service", name: "Add Service", element: <AddServicesPage /> },
