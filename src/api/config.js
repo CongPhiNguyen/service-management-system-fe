@@ -1,7 +1,9 @@
-const URL_SYSTEM_V1 = "http://localhost:5050/api/v1"
+const URL_SYSTEM_V1 = "http://localhost:5050/api/v1";
 const URL = {
-    URL_GET_ALL_SERVICE: URL_SYSTEM_V1 + "/service/get-all-service",
-    URL_ADD_NEW_SERVICE: URL_SYSTEM_V1 + "/service/add-new-service",
-}
+  URL_GET_ALL_SERVICE: URL_SYSTEM_V1 + "/service/get-all-service",
+  URL_ADD_NEW_SERVICE: URL_SYSTEM_V1 + "/service/add-new-service",
+  URL_GET_SERVICE_TREE: URL_SYSTEM_V1 + "/service/get-service-tree",
+  URL_GET_SERVICE_LIST: URL_SYSTEM_V1 + "/service/get-service-list",
+};
 
-export default URL
+export default URL;
