@@ -1,4 +1,4 @@
-import { Layout, Menu, Descriptions, Divider, Tree } from "antd";
+import { Layout, Menu, Descriptions, Divider, Tree, Button } from "antd";
 import React, { useEffect, useState } from "react";
 import {
   LaptopOutlined,
@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { getFix } from "../../../api/axios";
 import URL from "../../../api/config";
+import { useNavigate } from "react-router-dom";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -36,6 +37,7 @@ export default function MainPage() {
   const [currentServiceList, setCurrentServiceList] = useState([]);
   const [currentSelectedKey, setCurrentSelectedKey] = useState(0);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getAllService = () => {
@@ -96,6 +98,11 @@ export default function MainPage() {
           theme="light"
           className="overflow-auto !w-[300px] bg-[white]"
         >
+          <div className="flex justify-evenly mt-4">
+            <Button onClick={() => { navigate(`/edit-service/${currentSelectedService._id}`) }} type="primary">Sửa</Button>
+            <Button type="primary">Xóa</Button>
+          </div>
+
           <Descriptions
             column={1}
             className="px-4 pt-8"
@@ -214,7 +221,7 @@ export default function MainPage() {
                         Infrastructure:{" "}
                         {Object.keys(
                           currentSelectedService?.requirement?.infrastructure ||
-                            {}
+                          {}
                         ).map((value) => {
                           return <span>{value + " "}</span>;
                         })}

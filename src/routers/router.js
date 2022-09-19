@@ -3,6 +3,7 @@ import React from "react";
 const ServiceManagement = React.lazy(() =>
   import("../features/main/pages/MainPage")
 );
+const EditServicesPage = React.lazy(() => import("../features/EditService/pages/EditServicesPage"))
 const AddServicesPage = React.lazy(() =>
   import("../features/AddService/pages/AddServicesPage")
 );
@@ -13,6 +14,7 @@ const Test = React.lazy(() => import("../features//search/Test.js"));
 
 // Những route chỉ truy xuất khi chưa đăng nhập
 const publicRoute = [
+  { path: "/edit-service/:id", name: "Edit Service", element: <EditServicesPage /> },
   { path: "/add-service", name: "Add Service", element: <AddServicesPage /> },
   {
     path: "/service-management",

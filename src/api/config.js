@@ -4,6 +4,8 @@ const URL = {
   URL_ADD_NEW_SERVICE: URL_SYSTEM_V1 + "/service/add-new-service",
   URL_GET_SERVICE_TREE: URL_SYSTEM_V1 + "/service/get-service-tree",
   URL_GET_SERVICE_LIST: URL_SYSTEM_V1 + "/service/get-service-list",
+  URL_GET_SERVICE: URL_SYSTEM_V1 + "/service/get-service/", // + id
+  URL_EDIT_SERVICE: URL_SYSTEM_V1 + "/service/edit-service",
 };
 
 export default URL;
