@@ -1,10 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Layout } from "antd";
 import React from "react";
 const { Header } = Layout;
 
 const navItem = "px-3  inline-block mr-[1em] hover:opacity";
 const HeaderMain = () => {
+  const navigate = useNavigate();
   const makeClass = (isActive) => {
     return isActive
       ? `${navItem} bg-[#f7cc15] text-[black]`
@@ -14,8 +15,22 @@ const HeaderMain = () => {
   return (
     <Layout>
       <Header className="header flex items-center">
-        <img className="h-[40px]" alt="logo" width={100} src="/logo.png"></img>
+        <NavLink to="/service-management">
+          <img
+            className="h-[40px]"
+            alt="logo"
+            width={100}
+            src="/logo.png"
+          ></img>
+        </NavLink>
+
         <div className="left-nav ml-[50px]">
+          <NavLink
+            className={({ isActive }) => makeClass(isActive)}
+            to="/service-management"
+          >
+            Home
+          </NavLink>
           <NavLink
             className={({ isActive }) => makeClass(isActive)}
             to="/add-service"
