@@ -8,6 +8,7 @@ import {
 import { getFix } from "../../../api/axios";
 import URL from "../../../api/config";
 import { useNavigate } from "react-router-dom";
+import { get } from "../../../api/axios";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -53,7 +54,16 @@ export default function MainPage() {
     getAllService();
   }, []);
 
-  console.log("currentSelectedService", currentSelectedService);
+  const deleteService = async (id) => {
+    await get(URL.URL_DELETE_SERVICE + id)
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
 
   const renderTreeDescription = (label, val) => {
     return (
@@ -100,7 +110,7 @@ export default function MainPage() {
         >
           <div className="flex justify-evenly mt-4">
             <Button onClick={() => { navigate(`/edit-service/${currentSelectedService._id}`) }} type="primary">Sửa</Button>
-            <Button type="primary">Xóa</Button>
+            <Button onClick={() => deleteService(currentSelectedService._id)} type="primary">Xóa</Button>
           </div>
 
           <Descriptions
