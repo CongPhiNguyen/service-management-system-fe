@@ -86,7 +86,7 @@ export default function EditServiceByForm() {
     const onFinish = async (values) => {
         values.serviceDependencies = serviceDependencies
         console.log(values);
-        await post(URL.URL_EDIT_SERVICE, { ...values })
+        await post(URL.URL_EDIT_SERVICE + params.id, { ...values })
             .then(res => {
                 console.log(res)
             })
@@ -107,26 +107,6 @@ export default function EditServiceByForm() {
         console.log('checked = ', checkedValues);
     };
 
-    const test = [
-        {
-            test: 0,
-            name: 0,
-            isListField: true,
-            fieldKey: 0
-        },
-        {
-            test: 1,
-            name: 1,
-            isListField: true,
-            fieldKey: 1
-        },
-        {
-            test: 2,
-            name: 2,
-            isListField: true,
-            fieldKey: 2
-        }
-    ]
 
     if (!service) return <div className='flex justify-center'>
         <Spin></Spin>
@@ -237,8 +217,6 @@ export default function EditServiceByForm() {
                 <Form.List name={"alertTo"}>
                     {(fields, { add, remove }) => (
                         <>
-                            {console.log(fields)}
-                            {console.log(test)}
                             {fields.map(({ key, name, ...restField }) => (
                                 <Space key={key} align="baseline">
                                     <Form.Item
@@ -373,7 +351,7 @@ export default function EditServiceByForm() {
                 name={['serviceDependencies']}
                 label="Service Dependencies"
             >
-                <InputDependency serviceDependencies={serviceDependencies} setServiceDependencies={setServiceDependencies}></InputDependency>
+                <InputDependency service={service} serviceDependencies={serviceDependencies} setServiceDependencies={setServiceDependencies}></InputDependency>
             </Form.Item>
             <Divider></Divider>
             <Form.Item

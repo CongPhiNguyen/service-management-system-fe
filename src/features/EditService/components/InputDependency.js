@@ -18,10 +18,13 @@ const InputDependency = (props) => {
 
   const [listService, setListService] = useState([]);
   useEffect(() => {
+    console.log(props.service)
     const getAllService = async () => {
       get(URL.URL_GET_ALL_SERVICE)
         .then((res) => {
-          setListService(res.data.services.map((name) => name.serviceName));
+          let arr = res.data.services.map((name) => name.serviceName);
+          arr = arr.filter(name => name != props.service.serviceName)
+          setListService(arr);
         })
         .catch((err) => {
           console.log(err);
