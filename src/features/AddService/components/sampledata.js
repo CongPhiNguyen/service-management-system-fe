@@ -22,11 +22,12 @@ const sampleData = `{
   "requirement": {
     "domain": "https://event-broker.taptap.com.vn",
     "port": "xxx",
-    "plaftform": "java",
+    "platform": "java",
     "serviceDependencies": [
       { "name": "rating-service" },
       { "name": "orc-engine-service" }
     ],
+    "ownDependencies" : [],
     "infrastructure": {
       "java": true,
       "mongodb": true,
