@@ -143,28 +143,6 @@ export default function MainPage() {
             </Button>
           </div>
 
-          <Descriptions
-            column={1}
-            className="px-4 pt-8"
-            labelStyle={{ fontSize: 12, fontWeight: 700 }}
-            contentStyle={{ fontSize: 12 }}
-          >
-            <Descriptions.Item label="Service name">
-              {currentSelectedService.serviceName}
-            </Descriptions.Item>
-            <Descriptions.Item label="Author">
-              {currentSelectedService.author + ".taptap.com.vn"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Authorized">
-              {currentSelectedService.authorizedPerson + ".taptap.com.vn"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Public">
-              {currentSelectedService?.isPublic?.toString()}
-            </Descriptions.Item>
-            <Descriptions.Item label="version">
-              {currentSelectedService.version}
-            </Descriptions.Item>
-          </Descriptions>
           {currentSelectedService !== {} &&
             Object.keys(currentSelectedService).length !== 0 && (
               <React.Fragment>
