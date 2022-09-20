@@ -14,32 +14,11 @@ import NodeDisplay from "../../display/NodeDisplay";
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const items2 = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
-  (icon, index) => {
-    const key = String(index + 1);
-    return {
-      key: `sub${key}`,
-      label: `subnav ${key}`,
-      children: new Array(4).fill(null).map((_, j) => {
-        const subKey = index * 4 + j + 1;
-        return {
-          key: subKey,
-          label: `option${subKey}`,
-        };
-      }),
-    };
-  }
-);
-
-const defaultData = [];
-const x = 3;
-const y = 2;
-const z = 1;
-
 export default function MainPage() {
   const [currentServiceList, setCurrentServiceList] = useState([]);
   const [currentSelectedKey, setCurrentSelectedKey] = useState(0);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
+  const [currentDisplayService, setCurrentDisplayService] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +27,7 @@ export default function MainPage() {
         .then((data) => {
           console.log("data", data);
           setCurrentServiceList(data.data.services);
+          setCurrentSelectedService({});
         })
         .catch((err) => {
           console.log("err", err);
@@ -77,13 +57,23 @@ export default function MainPage() {
     );
   };
 
+  const changeCurrentDisplayService = (id) => {
+    console.log(id);
+    for (const service of currentServiceList) {
+      if (service._id === id) {
+        setCurrentDisplayService(service);
+        return;
+      }
+    }
+  };
+
   return (
     <div>
       <Layout className="h-[calc(100vh-64px)] overflow-hidden">
         <Sider className="!w-[200px] overflow-auto">
           <Menu
             mode="inline"
-            defaultSelectedKeys={currentServiceList[0]?._id}
+            defaultSelectedKeys={"0"}
             className="h-[100%] overflow-y-auto overflow-x-hidden"
             onClick={(value) => {
               // console.log("value", value);
@@ -92,11 +82,13 @@ export default function MainPage() {
               currentServiceList.forEach((service) => {
                 if (service._id === value.key) {
                   setCurrentSelectedService(service);
+                  setCurrentDisplayService(service);
                   isFind = true;
                 }
               });
               if (!isFind) {
                 setCurrentSelectedService({});
+                setCurrentDisplayService({});
               }
             }}
             items={[
@@ -115,9 +107,12 @@ export default function MainPage() {
         </Sider>
         <Content>
           {Object.keys(currentSelectedService).length === 0 ? (
-            <MainDisplay />
+            <MainDisplay changeCurrentService={changeCurrentDisplayService} />
           ) : (
-            <NodeDisplay nodeID={currentSelectedService._id} />
+            <NodeDisplay
+              changeCurrentService={changeCurrentDisplayService}
+              nodeID={currentSelectedService._id}
+            />
           )}
         </Content>
         <Sider
@@ -125,20 +120,20 @@ export default function MainPage() {
           theme="light"
           className="overflow-auto !w-[300px] bg-[white]"
         >
-          {currentSelectedService !== {} &&
-            Object.keys(currentSelectedService).length !== 0 && (
+          {currentDisplayService !== {} &&
+            Object.keys(currentDisplayService).length !== 0 && (
               <React.Fragment>
                 <div className="flex justify-evenly mt-4">
                   <Button
                     onClick={() => {
-                      navigate(`/edit-service/${currentSelectedService._id}`);
+                      navigate(`/edit-service/${currentDisplayService._id}`);
                     }}
                     type="primary"
                   >
                     Sửa
                   </Button>
                   <Button
-                    onClick={() => deleteService(currentSelectedService._id)}
+                    onClick={() => deleteService(currentDisplayService._id)}
                     type="primary"
                   >
                     Xóa
@@ -151,19 +146,19 @@ export default function MainPage() {
                   contentStyle={{ fontSize: 12 }}
                 >
                   <Descriptions.Item label="Service name">
-                    {currentSelectedService.serviceName}
+                    {currentDisplayService.serviceName}
                   </Descriptions.Item>
                   <Descriptions.Item label="Author">
-                    {currentSelectedService.author + ".taptap.com.vn"}
+                    {currentDisplayService.author + ".taptap.com.vn"}
                   </Descriptions.Item>
                   <Descriptions.Item label="Authorized">
-                    {currentSelectedService.authorizedPerson + ".taptap.com.vn"}
+                    {currentDisplayService.authorizedPerson + ".taptap.com.vn"}
                   </Descriptions.Item>
                   <Descriptions.Item label="Public">
-                    {currentSelectedService?.isPublic?.toString()}
+                    {currentDisplayService?.isPublic?.toString()}
                   </Descriptions.Item>
                   <Descriptions.Item label="version">
-                    {currentSelectedService.version}
+                    {currentDisplayService.version}
                   </Descriptions.Item>
                 </Descriptions>
 
@@ -179,15 +174,14 @@ export default function MainPage() {
                         {
                           title: renderTreeDescription(
                             "Endpoint PublicUrl",
-                            currentSelectedService?.monitoring
-                              ?.endpointPublicUrl
+                            currentDisplayService?.monitoring?.endpointPublicUrl
                           ),
                           key: "0-0",
                         },
                         {
                           title: renderTreeDescription(
                             "Endpoint PrivateUrl",
-                            currentSelectedService?.monitoring
+                            currentDisplayService?.monitoring
                               ?.endpointPrivateUrl
                           ),
                           key: "0-1",
@@ -198,13 +192,13 @@ export default function MainPage() {
                               Alert bot:{" "}
                               <a
                                 href={
-                                  currentSelectedService?.monitoring?.alertBot
+                                  currentDisplayService?.monitoring?.alertBot
                                     ?.botEndpoint
                                 }
                                 onClick={() => console.log("abc")}
                               >
                                 {
-                                  currentSelectedService?.monitoring?.alertBot
+                                  currentDisplayService?.monitoring?.alertBot
                                     ?.name
                                 }
                               </a>
@@ -216,7 +210,7 @@ export default function MainPage() {
                             <span className="text-[10px] mt-[-10px]">
                               Alert to:{" "}
                               {
-                                currentSelectedService?.monitoring?.alertTo
+                                currentDisplayService?.monitoring?.alertTo
                                   .length
                               }
                             </span>
@@ -224,7 +218,7 @@ export default function MainPage() {
                           selectable: false,
                           key: "0-3",
                           children:
-                            currentSelectedService?.monitoring?.alertTo.map(
+                            currentDisplayService?.monitoring?.alertTo.map(
                               (value, index) => {
                                 return {
                                   title: renderTreeDescription("Email", value),
@@ -247,7 +241,7 @@ export default function MainPage() {
                         {
                           title: renderTreeDescription(
                             "Domain",
-                            currentSelectedService?.requirement?.domain
+                            currentDisplayService?.requirement?.domain
                           ),
                           key: "0-0",
                         },
@@ -284,7 +278,7 @@ export default function MainPage() {
                             <span className="text-[10px]">
                               Database:{" "}
                               {Object.keys(
-                                currentSelectedService?.requirement?.database
+                                currentDisplayService?.requirement?.database
                               ).map((val) => {
                                 return `${val} ::: ${currentSelectedService?.requirement?.database[val]?.dbName}`;
                               })}
@@ -298,7 +292,7 @@ export default function MainPage() {
                 />
               </React.Fragment>
             )}
-          {Object.keys(currentSelectedService).length === 0 && (
+          {Object.keys(currentDisplayService).length === 0 && (
             <div className="p-[10px]">Select any service to see detail</div>
           )}
         </Sider>

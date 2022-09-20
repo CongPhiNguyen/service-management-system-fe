@@ -1,9 +1,10 @@
+import CheckableTag from "antd/lib/tag/CheckableTag";
 import React, { useEffect, useState } from "react";
 import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
 import { getFix } from "../../api/axios";
 import URL from "../../api/config";
 
-export default function MainDisplay() {
+export default function MainDisplay(props) {
   const [currentServiceList, setCurrentServiceList] = useState([]);
 
   const [serviceNodes, setServiceNodes] = useState([]);
@@ -53,18 +54,18 @@ export default function MainDisplay() {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  useEffect(() => {
-    const getServiceTree = () => {
-      getFix(URL.URL_GET_SERVICE_TREE, { id: "632822a9981b22e2611c0c68" })
-        .then((data) => {
-          console.log("data", data);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
-    };
-    getServiceTree();
-  }, []);
+  // useEffect(() => {
+  //   const getServiceTree = () => {
+  //     getFix(URL.URL_GET_SERVICE_TREE, { id: "632822a9981b22e2611c0c68" })
+  //       .then((data) => {
+  //         console.log("data", data);
+  //       })
+  //       .catch((err) => {
+  //         console.log("err", err);
+  //       });
+  //   };
+  //   getServiceTree();
+  // }, []);
 
   useEffect(() => {
     const getAllService = () => {
@@ -115,6 +116,9 @@ export default function MainDisplay() {
                   fill={val.color}
                   radius={20}
                   draggable={true}
+                  onClick={() => {
+                    props.changeCurrentService(val._id);
+                  }}
                   onDragMove={(e) => {
                     setServiceNodes((prev) => {
                       return prev.map((val) => {
