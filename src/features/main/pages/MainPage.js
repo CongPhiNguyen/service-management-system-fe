@@ -38,7 +38,7 @@ export default function MainPage() {
   const [currentServiceList, setCurrentServiceList] = useState([]);
   const [currentSelectedKey, setCurrentSelectedKey] = useState(0);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAllService = () => {
@@ -56,14 +56,13 @@ export default function MainPage() {
 
   const deleteService = async (id) => {
     await get(URL.URL_DELETE_SERVICE + id)
-      .then(res => {
+      .then((res) => {
         console.log(res);
       })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const renderTreeDescription = (label, val) => {
     return (
@@ -109,8 +108,20 @@ export default function MainPage() {
           className="overflow-auto !w-[300px] bg-[white]"
         >
           <div className="flex justify-evenly mt-4">
-            <Button onClick={() => { navigate(`/edit-service/${currentSelectedService._id}`) }} type="primary">Sửa</Button>
-            <Button onClick={() => deleteService(currentSelectedService._id)} type="primary">Xóa</Button>
+            <Button
+              onClick={() => {
+                navigate(`/edit-service/${currentSelectedService._id}`);
+              }}
+              type="primary"
+            >
+              Sửa
+            </Button>
+            <Button
+              onClick={() => deleteService(currentSelectedService._id)}
+              type="primary"
+            >
+              Xóa
+            </Button>
           </div>
 
           <Descriptions
@@ -231,7 +242,7 @@ export default function MainPage() {
                         Infrastructure:{" "}
                         {Object.keys(
                           currentSelectedService?.requirement?.infrastructure ||
-                          {}
+                            {}
                         ).map((value) => {
                           return <span>{value + " "}</span>;
                         })}
