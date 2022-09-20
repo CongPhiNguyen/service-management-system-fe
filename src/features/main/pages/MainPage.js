@@ -1,4 +1,13 @@
-import { Layout, Menu, Descriptions, Divider, Tree, Button } from "antd";
+import {
+  Layout,
+  Menu,
+  Descriptions,
+  Divider,
+  Tree,
+  Button,
+  Modal,
+  message,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import {
   LaptopOutlined,
@@ -36,14 +45,55 @@ export default function MainPage() {
     getAllService();
   }, []);
 
-  const deleteService = async (id) => {
-    await get(URL.URL_DELETE_SERVICE + id)
+  const [arrDenpen, setArrDepen] = useState([]);
+  const [arrOwnDepen, setArrOwnDepen] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const deleteService = async () => {
+    const arrDependencies = [];
+    const arrOwnDependencies = [];
+    for (let i = 0; i < currentServiceList.length; i++) {
+      if (
+        currentSelectedService.requirement.serviceDependencies.includes(
+          currentServiceList[i]._id
+        )
+      ) {
+        arrDependencies.push(currentServiceList[i].serviceName);
+      }
+      if (
+        currentSelectedService.requirement.ownDependencies.includes(
+          currentServiceList[i]._id
+        )
+      ) {
+        arrOwnDependencies.push(currentServiceList[i].serviceName);
+      }
+    }
+    setArrDepen(arrDependencies);
+    setArrOwnDepen(arrOwnDependencies);
+    showModal();
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = async () => {
+    await get(URL.URL_DELETE_SERVICE + currentSelectedService._id)
       .then((res) => {
-        console.log(res);
+        message.success(
+          `Xóa service ${currentSelectedService.serviceName} thành công`
+        );
+        setCurrentServiceList(res.data.services);
+        setCurrentSelectedService({});
       })
       .catch((err) => {
-        console.log(err);
+        message.error(err.message);
       });
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const renderTreeDescription = (label, val) => {
@@ -69,6 +119,34 @@ export default function MainPage() {
 
   return (
     <div>
+      <Modal
+        title="Basic Modal"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        {arrDenpen.length !== 0 && (
+          <>
+            <h6>Các service dependencies bị ảnh hưởng</h6>
+            <ul className="list-disc">
+              {arrDenpen.map((value) => (
+                <li key={value}>{value}</li>
+              ))}
+            </ul>
+          </>
+        )}
+        {arrOwnDepen.length !== 0 && (
+          <>
+            <h6>Các service own dependencies bị ảnh hưởng</h6>
+            <ul className="list-disc">
+              {arrOwnDepen.map((value) => (
+                <li key={value}>{value}</li>
+              ))}
+            </ul>
+          </>
+        )}
+        <h3>Bạn có chắc chắn muốn xóa service?</h3>
+      </Modal>
       <Layout className="h-[calc(100vh-64px)] overflow-hidden">
         <Sider className="!w-[200px] overflow-auto">
           <Menu
