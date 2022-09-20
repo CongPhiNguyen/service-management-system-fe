@@ -1,9 +1,7 @@
-import { UserOutlined } from '@ant-design/icons';
-import { AutoComplete, Input } from 'antd';
+import { AutoComplete, Input, Form } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { get } from "../../api/axios"
-import URL from "../../api/config"
-import RemoveAccents from '../../helper/RemoveAccents';
+import { get } from "../../../api/axios"
+import URL from "../../../api/config"
 const renderTitle = (title) => (
     <span>
         {title}
@@ -25,22 +23,7 @@ const renderItem = (title) => ({
     ),
 });
 
-// const options = [
-//     {
-//         label: renderTitle('Libraries'),
-//         options: [renderItem('AntDesign'), renderItem('AntDesign UI')],
-//     },
-//     {
-//         label: renderTitle('Solutions'),
-//         options: [renderItem('AntDesign UI FAQ'), renderItem('AntDesign FAQ')],
-//     },
-//     {
-//         label: renderTitle('Articles'),
-//         options: [renderItem('AntDesign design language')],
-//     },
-// ];
-
-const App = () => {
+const EmailInput = (props) => {
     const [allUser, setAllUser] = useState([])
     const [options, setOptions] = useState([])
 
@@ -76,16 +59,25 @@ const App = () => {
     }
 
     return (
-        <AutoComplete
-            popupClassName="certain-category-search-dropdown"
-            dropdownMatchSelectWidth={500}
-            style={{
-                width: 250,
-            }}
-            options={options}
+        <Form.Item
+            name={[props.name]}
+            label={props.label}
+            rules={[
+                {
+                    required: true,
+                },
+            ]}
+            initialValue={props.initValue}
         >
-            <Input size="small" onChange={handleChange} placeholder="input here" />
-        </AutoComplete>
+            <AutoComplete
+                popupClassName="certain-category-search-dropdown"
+                dropdownMatchSelectWidth={500}
+                options={options}
+            >
+
+                <Input onChange={handleChange} placeholder="abc.d.e" addonAfter="@taptap.com.vn" />
+            </AutoComplete>
+        </Form.Item>
     )
 
 }
@@ -93,4 +85,4 @@ const App = () => {
 
 
 
-export default App;
+export default EmailInput;

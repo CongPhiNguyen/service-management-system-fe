@@ -2,8 +2,9 @@ import { Button, Form, Input, InputNumber, Divider, Radio, Space, Checkbox, Moda
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import InputDependency from "./InputDependency"
-import { post } from '../../../api/axios';
+import { post, get } from '../../../api/axios';
 import URL from "../../../api/config"
+import InputEmail from "./InputEmail"
 import { useNavigate } from 'react-router-dom';
 /* eslint-disable */
 
@@ -77,7 +78,7 @@ export default function AddServiceByForm() {
                 }
             })
             .catch(err => {
-                console.log(err)
+                message.error(err.message)
             })
         setIsModalOpen(false);
     };
@@ -89,7 +90,6 @@ export default function AddServiceByForm() {
         const getAllService = async () => {
             get(URL.URL_GET_ALL_SERVICE)
                 .then(res => {
-                    console.log(res)
                     res.data.services.map(name => {
                         return {
                             value: name.serviceName
@@ -97,10 +97,9 @@ export default function AddServiceByForm() {
                     })
                 })
                 .catch(err => {
-                    console.log(err)
+                    message.error(err.message)
                 })
         }
-
         getAllService()
     }, [])
 
@@ -117,13 +116,16 @@ export default function AddServiceByForm() {
     const [scope, setScope] = useState();
     const onChange = (e) => {
         setScope(e.target.value);
-
     };
 
     // Checkbox
     const onChangeCheckBox = (checkedValues) => {
-        console.log('checked = ', checkedValues);
+        // console.log('checked = ', checkedValues);
     };
+
+    // 
+
+
     return (
         <>
             <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
@@ -144,31 +146,9 @@ export default function AddServiceByForm() {
                     <Input />
                 </Form.Item>
                 {/* Author */}
-                <Form.Item
-                    name={"author"}
-                    label="Author"
-                    rules={[
-                        {
-                            required: true
-                        },
-                    ]}
-                    initialValue={"phuoc.t.luong"}
-                >
-                    <Input addonAfter="@taptap.com.vn" />
-                </Form.Item>
+                <InputEmail name="author" label="Author"></InputEmail>
                 {/* Authoriza */}
-                <Form.Item
-                    name={"authorizedPerson"}
-                    label="Authorized Person"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                    initialValue={"phuoc.t.luong"}
-                >
-                    <Input addonAfter="@taptap.com.vn" />
-                </Form.Item>
+                <InputEmail name="authorizedPerson" label="Authorized Person"></InputEmail>
                 {/* scope */}
                 <Form.Item
                     name={"isPublic"}

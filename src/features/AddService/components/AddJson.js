@@ -207,7 +207,6 @@ export default function AddJson() {
           },
         ]}
         onChange={(value) => {
-          console.log(value);
           setCurrentSegment(value);
           setGlobalJSONValue((prev) => {
             return JSON.stringify(JSON.parse(prev), null, "\t");

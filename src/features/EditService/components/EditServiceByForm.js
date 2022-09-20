@@ -5,6 +5,7 @@ import InputDependency from "./InputDependency"
 import { post, get } from '../../../api/axios';
 import { useNavigate, useParams } from "react-router-dom";
 import URL from "../../../api/config"
+import EmailInput from './InputEmail';
 /* eslint-disable */
 
 const layout = {
@@ -78,7 +79,7 @@ export default function EditServiceByForm() {
                     }
                 })
                 .catch(err => {
-                    console.log(err)
+                    message.error(err.message)
                 })
         }
         getService()
@@ -134,7 +135,7 @@ export default function EditServiceByForm() {
 
     // Checkbox
     const onChangeCheckBox = (checkedValues) => {
-        console.log('checked = ', checkedValues);
+        // console.log('checked = ', checkedValues);
     };
 
 
@@ -162,20 +163,12 @@ export default function EditServiceByForm() {
                     <Input />
                 </Form.Item>
                 {/* Author */}
-                <Form.Item
-                    name={"author"}
-                    label="Author"
-                    rules={[
-                        {
-                            required: true
-                        },
-                    ]}
-                    initialValue={service.author}
-                >
-                    <Input disabled addonAfter="@taptap.com.vn" />
-                </Form.Item>
+                <EmailInput name="author" label="Author" initValue={service.author}></EmailInput>
+
                 {/* Authoriza */}
-                <Form.Item
+                <EmailInput name="authorizedPerson" label="Authorized Person" initValue={service.authorizedPerson}></EmailInput>
+
+                {/* <Form.Item
                     name={"authorizedPerson"}
                     label="Authorized Person"
                     rules={[
@@ -186,7 +179,7 @@ export default function EditServiceByForm() {
                     initialValue={service.authorizedPerson}
                 >
                     <Input addonAfter="@taptap.com.vn" />
-                </Form.Item>
+                </Form.Item> */}
                 {/* scope */}
                 <Form.Item
                     name={"isPublic"}

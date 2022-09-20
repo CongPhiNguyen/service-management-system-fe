@@ -1,5 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Tag, AutoComplete } from "antd";
+import { Tag, AutoComplete, message } from "antd";
 import { TweenOneGroup } from "rc-tween-one";
 import React, { useEffect, useRef, useState } from "react";
 import RemoveAccents from "../../../helper/RemoveAccents";
@@ -24,7 +24,7 @@ const InputDependency = (props) => {
           setListService(res.data.services.map((name) => name.serviceName));
         })
         .catch((err) => {
-          console.log(err);
+          message.error(err.message)
         });
     };
     getAllService();
