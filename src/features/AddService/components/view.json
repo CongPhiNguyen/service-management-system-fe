@@ -1,6 +1,6 @@
 [
   {
-    "serviceName": "Service-LTP1111",
+    "serviceName": "Add-service",
     "author": "phuoc.t.luong",
     "authorizedPerson": "phuoc.t.luong",
     "isPublic": "public",
@@ -12,8 +12,8 @@
     "domain": "phuoc.t.luong",
     "port": 8080,
     "platform": "Java",
-    "serviceDependencies": ["Service-LTP-A"],
-    "infrastructure": ["java", "mongodb", "redis"],
+    "serviceDependencies": ["Login"],
+    "infrastructure": [],
     "database": "mongodb-nameLTP"
   },
   {

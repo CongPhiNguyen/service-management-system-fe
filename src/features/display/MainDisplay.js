@@ -6,7 +6,7 @@ import URL from "../../api/config";
 
 export default function MainDisplay(props) {
   const [currentServiceList, setCurrentServiceList] = useState([]);
-
+  const [currentSelectNodeID, setCurrentSelectNodeID] = useState(null);
   const [serviceNodes, setServiceNodes] = useState([]);
   const [serviceRelations, setServiceRelations] = useState([]);
 
@@ -40,9 +40,12 @@ export default function MainDisplay(props) {
       const dependFor = serviceNodes[i].dependFor;
       for (let j = 0; j < dependFor.length; j++) {
         // console.log(objectFind[serviceNodes[i]._id], objectFind[dependFor[j]]);
+        console.log("a");
         serviceRelationTemp.push({
           pointA: objectFind[serviceNodes[i]._id],
           pointB: objectFind[dependFor[j]],
+          isSelectA: currentSelectNodeID === dependFor[j],
+          isSelectB: currentSelectNodeID === serviceNodes[i]._id,
         });
       }
     }
@@ -114,10 +117,17 @@ export default function MainDisplay(props) {
                   x={((index * 1000) % 70) * 10 + 20}
                   y={((index * 1000) % 30) * 10 + 20}
                   fill={val.color}
+                  stroke={
+                    val._id === currentSelectNodeID ? "red" : "transparent"
+                  }
+                  // strokeWidth={"20px"}
+                  // shadowBlur={val._id === currentSelectNodeID ? "10px" : "0px"}
                   radius={20}
                   draggable={true}
                   onClick={() => {
                     props.changeCurrentService(val._id);
+                    setCurrentSelectNodeID(val._id);
+                    makeServiceRelation(serviceNodes);
                   }}
                   onDragMove={(e) => {
                     setServiceNodes((prev) => {
@@ -140,8 +150,8 @@ export default function MainDisplay(props) {
               return (
                 <Arrow
                   points={calculatePoint(val.pointA, val.pointB)}
-                  stroke="black"
-                  fill="black"
+                  stroke={val.isSelectA || val.isSelectB ? "red" : "black"}
+                  fill={val.isSelectA || val.isSelectB ? "red" : "black"}
                 />
               );
           })}

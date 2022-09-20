@@ -1,6 +1,6 @@
 import { Tabs, Layout, Typography } from "antd";
 import React, { useState, useEffect } from "react";
-import AddJson from "../components/AddJson.js";
+import EditJson from "../components/EditJson.js";
 import EditServiceByForm from "../components/EditServiceByForm";
 import { get } from "../../../api/axios";
 import URL from "../../../api/config";
@@ -26,7 +26,7 @@ export default function EditServicesPage() {
             <EditServiceByForm></EditServiceByForm>
           </Tabs.TabPane>
           <Tabs.TabPane tab="JSON" key="232121231">
-            <AddJson />
+            <EditJson />
           </Tabs.TabPane>
         </Tabs>
       </Content>

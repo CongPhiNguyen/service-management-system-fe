@@ -28,6 +28,7 @@ export default function MainPage() {
   const [currentSelectedKey, setCurrentSelectedKey] = useState(0);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
   const [currentDisplayService, setCurrentDisplayService] = useState({});
+
   const navigate = useNavigate();
 
   useEffect(() => {
