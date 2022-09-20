@@ -84,8 +84,7 @@ export default function MainPage() {
           <Menu
             mode="inline"
             defaultSelectedKeys={currentServiceList[0]?._id}
-            // defaultOpenKeys={["sub1"]}
-            style={{ height: "100%" }}
+            className="h-[100%] overflow-y-auto overflow-x-hidden"
             onClick={(value) => {
               // console.log("value", value);
               // setCurrentSelectedKey(value);
@@ -126,26 +125,25 @@ export default function MainPage() {
           theme="light"
           className="overflow-auto !w-[300px] bg-[white]"
         >
-          <div className="flex justify-evenly mt-4">
-            <Button
-              onClick={() => {
-                navigate(`/edit-service/${currentSelectedService._id}`);
-              }}
-              type="primary"
-            >
-              Sửa
-            </Button>
-            <Button
-              onClick={() => deleteService(currentSelectedService._id)}
-              type="primary"
-            >
-              Xóa
-            </Button>
-          </div>
-
           {currentSelectedService !== {} &&
             Object.keys(currentSelectedService).length !== 0 && (
               <React.Fragment>
+                <div className="flex justify-evenly mt-4">
+                  <Button
+                    onClick={() => {
+                      navigate(`/edit-service/${currentSelectedService._id}`);
+                    }}
+                    type="primary"
+                  >
+                    Sửa
+                  </Button>
+                  <Button
+                    onClick={() => deleteService(currentSelectedService._id)}
+                    type="primary"
+                  >
+                    Xóa
+                  </Button>
+                </div>
                 <Descriptions
                   column={1}
                   className="px-4 pt-8"
@@ -301,7 +299,7 @@ export default function MainPage() {
               </React.Fragment>
             )}
           {Object.keys(currentSelectedService).length === 0 && (
-            <div>Select any service to see detail</div>
+            <div className="p-[10px]">Select any service to see detail</div>
           )}
         </Sider>
       </Layout>
