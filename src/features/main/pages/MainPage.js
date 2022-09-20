@@ -8,7 +8,7 @@ import {
   Modal,
   message,
   Typography,
-  List
+  List,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import {
@@ -51,6 +51,8 @@ export default function MainPage() {
   const [currentServiceList, setCurrentServiceList] = useState([]);
   const [currentSelectedKey, setCurrentSelectedKey] = useState(0);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
+  const [currentDisplayService, setCurrentDisplayService] = useState({});
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,12 +62,12 @@ export default function MainPage() {
           setCurrentServiceList(data.data.services);
         })
         .catch((err) => {
-          message.error(err.message)
+          message.error(err.message);
         });
     };
     getAllService();
   }, []);
-  const [arrServiceNameAndId, setArrServiceNameAndId] = useState([])
+  const [arrServiceNameAndId, setArrServiceNameAndId] = useState([]);
   useEffect(() => {
     const arrDependencies = [];
     for (let i = 0; i < currentServiceList.length; i++) {
@@ -76,12 +78,12 @@ export default function MainPage() {
       ) {
         arrDependencies.push({
           serviceName: currentServiceList[i].serviceName,
-          id: currentServiceList[i]._id
+          id: currentServiceList[i]._id,
         });
       }
     }
-    setArrServiceNameAndId(arrDependencies)
-  }, [currentSelectedService])
+    setArrServiceNameAndId(arrDependencies);
+  }, [currentSelectedService]);
 
   const [arrDenpen, setArrDepen] = useState([]);
   const [arrOwnDepen, setArrOwnDepen] = useState([]);
@@ -116,13 +118,13 @@ export default function MainPage() {
   };
 
   const selectService = (serviceName) => {
-    console.log("FUC")
-    currentServiceList.forEach(service => {
+    console.log("FUC");
+    currentServiceList.forEach((service) => {
       if (service.serviceName === serviceName) {
-        setCurrentSelectedService(service)
+        setCurrentSelectedService(service);
       }
-    })
-  }
+    });
+  };
 
   const handleOk = async () => {
     await get(URL.URL_DELETE_SERVICE + currentSelectedService._id)
@@ -150,10 +152,22 @@ export default function MainPage() {
         labelStyle={{ fontSize: 15, fontWeight: 700 }}
       >
         <Descriptions.Item label={label}>
-          <a href={"http://" + val} target="_blank">{val}</a>
+          <a href={"http://" + val} target="_blank">
+            {val}
+          </a>
         </Descriptions.Item>
       </Descriptions>
     );
+  };
+
+  const changeCurrentDisplayService = (id) => {
+    console.log(id);
+    for (const service of currentServiceList) {
+      if (service._id === id) {
+        setCurrentDisplayService(service);
+        return;
+      }
+    }
   };
 
   return (
@@ -233,7 +247,9 @@ export default function MainPage() {
           theme="light"
           className="overflow-auto !w-[300px] bg-[white]"
         >
-          <Title level={2} className="text-center">Information</Title>
+          <Title level={2} className="text-center">
+            Information
+          </Title>
           <div className="flex justify-evenly mt-4">
             <Button
               onClick={() => {
@@ -282,7 +298,11 @@ export default function MainPage() {
                   className="!mt-[-20px]"
                   treeData={[
                     {
-                      title: <span className="text-[16px] font-bold">Monitoring</span>,
+                      title: (
+                        <span className="text-[16px] font-bold">
+                          Monitoring
+                        </span>
+                      ),
                       key: "0",
                       children: [
                         {
@@ -324,17 +344,18 @@ export default function MainPage() {
                         {
                           title: (
                             <span className="text-[16px] font-bold mt-[-10px] flex">
-                              <div>
-                                Alert to:{" "}
-                              </div>
+                              <div>Alert to: </div>
                               <div className="pl-2">
-                                {
-                                  currentSelectedService?.monitoring?.alertTo.map(value => (
-                                    <div key={value} className="mb-2 font-normal">
+                                {currentSelectedService?.monitoring?.alertTo.map(
+                                  (value) => (
+                                    <div
+                                      key={value}
+                                      className="mb-2 font-normal"
+                                    >
                                       <a>{value.email}</a>
                                     </div>
-                                  ))
-                                }
+                                  )
+                                )}
                               </div>
                             </span>
                           ),
@@ -349,7 +370,11 @@ export default function MainPage() {
                 <Tree
                   treeData={[
                     {
-                      title: <span className="text-[16px] font-bold">Requirement</span>,
+                      title: (
+                        <span className="text-[16px] font-bold">
+                          Requirement
+                        </span>
+                      ),
                       key: "0",
                       children: [
                         {
@@ -381,9 +406,15 @@ export default function MainPage() {
                                 currentSelectedService?.requirement
                                   ?.infrastructure || {}
                               ).map((value) => {
-                                if (currentSelectedService?.requirement
-                                  ?.infrastructure[value] === true)
-                                  return <span className="font-normal text-red-400">{value + " "}</span>;
+                                if (
+                                  currentSelectedService?.requirement
+                                    ?.infrastructure[value] === true
+                                )
+                                  return (
+                                    <span className="font-normal text-red-400">
+                                      {value + " "}
+                                    </span>
+                                  );
                               })}
                             </span>
                           ),
@@ -396,9 +427,15 @@ export default function MainPage() {
                               {Object.keys(
                                 currentSelectedService?.requirement?.database
                               ).map((val) => {
-                                return <span className="font-normal">
-                                  {val} ::: {currentSelectedService?.requirement?.database[val]?.dbName}
-                                </span>;
+                                return (
+                                  <span className="font-normal">
+                                    {val} :::{" "}
+                                    {
+                                      currentSelectedService?.requirement
+                                        ?.database[val]?.dbName
+                                    }
+                                  </span>
+                                );
                               })}
                             </span>
                           ),
@@ -415,11 +452,21 @@ export default function MainPage() {
                     header={<div className="font-bold">List dependencies</div>}
                     bordered
                     // dataSource={["abc", "abc"]}
-                    dataSource={arrServiceNameAndId.length === 0 ? [] : arrServiceNameAndId.map(value => value.serviceName)}
-                    renderItem={item => <List.Item className="cursor-pointer" onClick={() => selectService(item)}>{item}</List.Item>}
+                    dataSource={
+                      arrServiceNameAndId.length === 0
+                        ? []
+                        : arrServiceNameAndId.map((value) => value.serviceName)
+                    }
+                    renderItem={(item) => (
+                      <List.Item
+                        className="cursor-pointer"
+                        onClick={() => selectService(item)}
+                      >
+                        {item}
+                      </List.Item>
+                    )}
                   />
                 </div>
-
               </React.Fragment>
             )}
           {Object.keys(currentSelectedService).length === 0 && (

@@ -7,25 +7,24 @@ export default function NodeDisplay(props) {
   console.log("props", props);
 
   const [currentServiceList, setCurrentServiceList] = useState([]);
-
   const [serviceNodes, setServiceNodes] = useState([]);
   const [serviceRelations, setServiceRelations] = useState([]);
 
   const createServiceNodes = (services) => {
-    const serviceNodesTemp = services.map((val, index) => {
-      return {
-        index: index,
-        _id: val._id,
-        name: val.serviceName,
-        x: ((index * 1000) % 70) * 10 + 20,
-        y: ((index * 1000) % 30) * 10 + 20,
-        color: randomColor(),
-        dependFor: val.requirement.serviceDependencies,
-      };
-    });
+    // const serviceNodesTemp = services.map((val, index) => {
+    //   return {
+    //     index: index,
+    //     _id: val._id,
+    //     name: val.serviceName,
+    //     x: ((index * 1000) % 70) * 10 + 20,
+    //     y: ((index * 1000) % 30) * 10 + 20,
+    //     color: randomColor(),
+    //     dependFor: val.requirement.serviceDependencies,
+    //   };
+    // });
     // console.log("serviceNodesTemp", serviceNodesTemp);
-    setServiceNodes(serviceNodesTemp);
-    makeServiceRelation(serviceNodesTemp);
+    // setServiceNodes(serviceNodesTemp);
+    // makeServiceRelation(serviceNodesTemp);
   };
 
   const makeServiceRelation = (serviceNodes) => {

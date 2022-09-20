@@ -10,15 +10,19 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/theme-monokai";
 import { post, get } from "../../../api/axios";
 import URL from "../../../api/config";
-import { interpolate } from "d3";
-export default function AddJson() {
+import { useNavigate, useParams } from "react-router-dom";
+
+export default function EditJson() {
+  const params = useParams();
+  const navigate = useNavigate();
   // console.log(sampleData);
   const [currentSegment, setCurrentSegment] = useState("json_ide");
   const [disableConvert, setDisableConvert] = useState(true);
   const [globalJSONValue, setGlobalJSONValue] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isValidInputJSON, setIsValidInputJSON] = useState(false);
+  const [isValidInputJSON, setIsValidInputJSON] = useState(true);
   const [allServices, setAllServices] = useState([]);
+  const [currentEditService, setCurrentEditService] = useState({});
 
   useEffect(() => {
     const getAllService = async () => {
@@ -35,6 +39,46 @@ export default function AddJson() {
     getAllService();
   }, []);
 
+  console.log("allServices", allServices);
+
+  const makeInitJSON = (service) => {
+    console.log("service", service);
+    service.requirement.serviceDependencies =
+      service.requirement.serviceDependencies.map((val) => {
+        // console.log("val", val);
+        return val.serviceName;
+      });
+    delete service.requirement.ownDependencies;
+    return JSON.stringify(service, null, "\t");
+  };
+
+  useEffect(() => {
+    const getEditService = () => {
+      get(URL.URL_GET_SERVICE + params.id)
+        .then((data) => {
+          // console.log("data.data.service", data.data.service);
+          // console.log(JSON.stringify(data.data.service, null, "\t"));
+          setGlobalJSONValue(makeInitJSON(data.data.service));
+          setCurrentEditService(data.data.service);
+          // if (res.data.service) {
+          //   // setService(res.data.service)
+          //   setServiceDependencies(
+          //     res.data.service.requirement.serviceDependencies.map(
+          //       (service) => {
+          //         return service.serviceName;
+          //       }
+          //     )
+          //   );
+          // }
+          // console.log("res", res);
+        })
+        .catch((err) => {
+          message.error(err.message);
+        });
+    };
+    getEditService();
+  }, []);
+
   const checkJSONValid = (text) => {
     if (text.length === 0) return false;
     try {
@@ -43,12 +87,6 @@ export default function AddJson() {
       return false;
     }
     return true;
-  };
-
-  const makeDefaultTemplate = () => {
-    setGlobalJSONValue(sampleData);
-    setIsValidInputJSON(true);
-    setDisableConvert(false);
   };
 
   const checkIsValidServices = (value) => {
@@ -69,19 +107,6 @@ export default function AddJson() {
       return {
         valid: false,
         message: "The authorized person email is not found or blank",
-      };
-    }
-    const regexTestEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (!regexTestEmail.test(val.author)) {
-      return {
-        valid: false,
-        message: "Author email format not valid",
-      };
-    }
-    if (!regexTestEmail.test(val.authorizedPerson)) {
-      return {
-        valid: false,
-        message: "Authorized email format not valid",
       };
     }
     if (val.isPublic == undefined) {
@@ -161,10 +186,15 @@ export default function AddJson() {
       "Service serviceDependencies"
     );
     if (!checkStep.valid) return checkStep;
+    console.log(
+      "val.requirement?.serviceDependencies",
+      val.requirement?.serviceDependencies
+    );
     for (const depen of val.requirement?.serviceDependencies) {
       let isFind = false;
       for (const service of allServices) {
-        if (depen.name === service.serviceName) {
+        console.log(depen, service.serviceName);
+        if (depen === service.serviceName) {
           isFind = true;
         }
       }
@@ -200,12 +230,41 @@ export default function AddJson() {
     setIsModalOpen(true);
   };
 
+  const editServiceAPI = (data) => {
+    post(URL.URL_EDIT_SERVICE + params.id, { ...data })
+      .then((res) => {
+        if (res.data.status === 0) {
+          if (res.data.deadlock) {
+            res.data.deadlock.forEach((deadlock) => {
+              if (deadlock.deadlock === true) {
+                message.error(
+                  `Việc thêm service ${deadlock.serviceName} vào dependencies xảy ra deadlock`
+                );
+              }
+            });
+          } else {
+            message.error(res.data.message);
+          }
+        } else {
+          message.success(
+            `Service ${currentEditService.serviceName} chỉnh sửa thành công!`
+          );
+          navigate("/service-management");
+        }
+        setIsModalOpen(false);
+      })
+      .catch((err) => {
+        message.error(err.message);
+        setIsModalOpen(false);
+      });
+  };
+
   const addServiceHandle = () => {
     if (!checkJSONValid(globalJSONValue))
       message.error("File json định dạng lỗi");
 
     const resCheckValid = checkIsValidServices(globalJSONValue);
-    console.log(globalJSONValue);
+    // console.log(globalJSONValue);
     if (resCheckValid.valid) {
       message.success("Thêm json thành công");
       const globalObjectValue = JSON.parse(globalJSONValue);
@@ -214,7 +273,10 @@ export default function AddJson() {
         alertTo: globalObjectValue.monitoring.alertTo.map((val) => {
           return {
             name: val.name,
-            email: val.email.slice(0, val.email.indexOf("@taptap")),
+            email:
+              val.email.indexOf("@taptap") >= 0
+                ? val.email.slice(0, val.email.indexOf("@taptap"))
+                : val.email,
             phone: val.phone,
           };
         }),
@@ -242,22 +304,11 @@ export default function AddJson() {
         nameBot: globalObjectValue.monitoring.alertBot.name,
         platform: globalObjectValue.requirement.platform,
         port: globalObjectValue.requirement.port,
-        serviceDependencies:
-          globalObjectValue.requirement.serviceDependencies.map((val) => {
-            for (const service of allServices) {
-              if (service.serviceName === val.name) return service.serviceName;
-            }
-          }),
+        serviceDependencies: globalObjectValue.requirement.serviceDependencies,
         serviceName: globalObjectValue.serviceName,
         version: globalObjectValue.version,
       };
-      post(URL.URL_ADD_NEW_SERVICE, addData2)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      editServiceAPI(addData2);
     } else {
       message.error(resCheckValid.message);
     }
@@ -267,6 +318,8 @@ export default function AddJson() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  console.log();
 
   return (
     <div>
@@ -312,13 +365,12 @@ export default function AddJson() {
             }}
           />
           <div className="button-container mt-2 flex ">
-            <Button onClick={makeDefaultTemplate}>Use default</Button>
             <Button
               type="primary"
               onClick={addService}
               disabled={!isValidInputJSON}
             >
-              Add service
+              Edit service
             </Button>
           </div>
         </div>
@@ -341,13 +393,12 @@ export default function AddJson() {
             editorProps={{ $blockScrolling: true }}
           />
           <div className="button-container mt-2 flex ">
-            <Button onClick={makeDefaultTemplate}>Use default</Button>
             <Button
               type="primary"
               onClick={addService}
               disabled={!isValidInputJSON}
             >
-              Add service
+              Edit service
             </Button>
           </div>
         </div>
