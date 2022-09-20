@@ -166,13 +166,14 @@ export default function MainDisplay() {
             );
           })}
           {serviceRelations.map((val, index) => {
-            return (
-              <Arrow
-                points={calculatePoint(val.pointA, val.pointB)}
-                stroke="black"
-                fill="black"
-              />
-            );
+            if (val.pointA && val.pointB)
+              return (
+                <Arrow
+                  points={calculatePoint(val.pointA, val.pointB)}
+                  stroke="black"
+                  fill="black"
+                />
+              );
           })}
           {/* <Circle x={100} y={200} radius={20} fill="green" />
           <Circle

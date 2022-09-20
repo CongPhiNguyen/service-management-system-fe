@@ -1,9 +1,9 @@
-import { Button, Form, Input, InputNumber, Divider, Radio, Space, Checkbox, Spin } from 'antd';
+import { Button, Form, Input, InputNumber, Divider, Radio, Space, Checkbox, Spin, message, Modal } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import InputDependency from "./InputDependency"
 import { post, get } from '../../../api/axios';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import URL from "../../../api/config"
 /* eslint-disable */
 
@@ -61,9 +61,11 @@ const options = [
 
 export default function EditServiceByForm() {
     const params = useParams()
+    const navigate = useNavigate()
     const [service, setService] = useState(null)
     const [serviceDependencies, setServiceDependencies] = useState([])
-    const [fields, setFields] = useState([])
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [data, setData] = useState()
     useEffect(() => {
         const getService = async () => {
             await get(URL.URL_GET_SERVICE + params.id)
@@ -82,17 +84,45 @@ export default function EditServiceByForm() {
         getService()
     }, [])
 
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = async () => {
+        await post(URL.URL_EDIT_SERVICE + params.id, { ...data })
+            .then(res => {
+                if (res.data.status === 0) {
+                    if (res.data.deadlock) {
+                        res.data.deadlock.forEach(deadlock => {
+                            if (deadlock.deadlock === true) {
+                                message.error(`Việc thêm service ${deadlock.serviceName} vào dependencies xảy ra deadlock`)
+                            }
+                        })
+                    } else {
+                        message.error(res.data.message)
+                    }
+                } else {
+                    message.success(`Service ${service.serviceName} chỉnh sửa thành công!`)
+                    navigate("/service-management")
+                }
+            })
+            .catch(err => {
+                message.error(err.message)
+            })
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
     // form
     const onFinish = async (values) => {
         values.serviceDependencies = serviceDependencies
-        console.log(values);
-        await post(URL.URL_EDIT_SERVICE + params.id, { ...values })
-            .then(res => {
-                console.log(res)
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        setData(values)
+        showModal()
+
     };
 
     // Radio
@@ -113,275 +143,280 @@ export default function EditServiceByForm() {
     </div>
 
     return (
-        <Form {...layout} className="!pr-[100px]" name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
-            {/* Name */}
-            <Form.Item
-                name={['serviceName']}
-                label="Name Service"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-                initialValue={service.serviceName}
-            >
-                <Input />
-            </Form.Item>
-            {/* Author */}
-            <Form.Item
-                name={"author"}
-                label="Author"
-                rules={[
-                    {
-                        required: true
-                    },
-                ]}
-                initialValue={service.author}
-            >
-                <Input disabled addonAfter="@taptap.com.vn" />
-            </Form.Item>
-            {/* Authoriza */}
-            <Form.Item
-                name={"authorizedPerson"}
-                label="Authorized Person"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-                initialValue={service.authorizedPerson}
-            >
-                <Input addonAfter="@taptap.com.vn" />
-            </Form.Item>
-            {/* scope */}
-            <Form.Item
-                name={"isPublic"}
-                label="Scope"
-                rules={[
-                    {
-                        required: true
-                    },
-                ]}
-                initialValue={service.isPublic ? "public" : "private"}
-            >
-                <Radio.Group onChange={onChange} value={scope}>
-                    <Radio value={"public"}>Public</Radio>
-                    <Radio value={"private"}>Private</Radio>
-                </Radio.Group>
-            </Form.Item>
-            {/* Vesion */}
-            <Form.Item
-                name={['version']}
-                label="Version"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-                initialValue={service.version}
-            >
-                <Input />
-            </Form.Item>
-            <Divider></Divider>
-            {/* url public */}
-            <Form.Item
-                name={['endpointPublicUrl']}
-                label="Endpoint Public URL"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-                initialValue={service.monitoring.endpointPublicUrl}
-            >
-                <Input addonBefore="http://" />
-            </Form.Item>
-            {/* url private */}
-            <Form.Item
-                name={['endpointPrivateUrl']}
-                label="Endpoint Private URL"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-                initialValue={service.monitoring.endpointPrivateUrl}
-            >
-                <Input addonBefore="http://" />
-            </Form.Item>
-            <Divider></Divider>
-            {/* Alert to */}
-            <Form.Item
-                label="Alert To"
-            >
-                <Form.List name={"alertTo"}>
-                    {(fields, { add, remove }) => (
-                        <>
-                            {fields.map(({ key, name, ...restField }) => (
-                                <Space key={key} align="baseline">
-                                    <Form.Item
-                                        {...restField}
-                                        label="Name"
-                                        name={[name, 'name']}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Missing price',
-                                            },
-                                        ]}
-                                        initialValue={"phước"}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        {...restField}
-                                        label="Email"
-                                        name={[name, 'email']}
-                                        rules={[
-                                            {
-                                                type: "email",
-                                                required: true
-                                            },
-                                        ]}
-                                        initialValue={"phuoc.t.luong@gmail.com"}
-                                    >
-                                        <Input addonAfter="@taptap.com.vn" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        {...restField}
-                                        label="Phone"
-                                        name={[name, 'phone']}
-                                        rules={[
-                                            {
-                                                required: true,
-                                            },
-                                        ]}
-                                        initialValue={"0387527010"}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <MinusCircleOutlined onClick={() => remove(name)} />
-                                </Space>
-                            ))}
+        <>
+            <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                <p>Bạn có chắc chắn muốn thêm service?</p>
+            </Modal>
+            <Form {...layout} className="!pr-[100px]" name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+                {/* Name */}
+                <Form.Item
+                    name={['serviceName']}
+                    label="Name Service"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                    initialValue={service.serviceName}
+                >
+                    <Input />
+                </Form.Item>
+                {/* Author */}
+                <Form.Item
+                    name={"author"}
+                    label="Author"
+                    rules={[
+                        {
+                            required: true
+                        },
+                    ]}
+                    initialValue={service.author}
+                >
+                    <Input disabled addonAfter="@taptap.com.vn" />
+                </Form.Item>
+                {/* Authoriza */}
+                <Form.Item
+                    name={"authorizedPerson"}
+                    label="Authorized Person"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                    initialValue={service.authorizedPerson}
+                >
+                    <Input addonAfter="@taptap.com.vn" />
+                </Form.Item>
+                {/* scope */}
+                <Form.Item
+                    name={"isPublic"}
+                    label="Scope"
+                    rules={[
+                        {
+                            required: true
+                        },
+                    ]}
+                    initialValue={service.isPublic ? "public" : "private"}
+                >
+                    <Radio.Group onChange={onChange} value={scope}>
+                        <Radio value={"public"}>Public</Radio>
+                        <Radio value={"private"}>Private</Radio>
+                    </Radio.Group>
+                </Form.Item>
+                {/* Vesion */}
+                <Form.Item
+                    name={['version']}
+                    label="Version"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                    initialValue={service.version}
+                >
+                    <Input />
+                </Form.Item>
+                <Divider></Divider>
+                {/* url public */}
+                <Form.Item
+                    name={['endpointPublicUrl']}
+                    label="Endpoint Public URL"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                    initialValue={service.monitoring.endpointPublicUrl}
+                >
+                    <Input addonBefore="http://" />
+                </Form.Item>
+                {/* url private */}
+                <Form.Item
+                    name={['endpointPrivateUrl']}
+                    label="Endpoint Private URL"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                    initialValue={service.monitoring.endpointPrivateUrl}
+                >
+                    <Input addonBefore="http://" />
+                </Form.Item>
+                <Divider></Divider>
+                {/* Alert to */}
+                <Form.Item
+                    label="Alert To"
+                >
+                    <Form.List name={"alertTo"}>
+                        {(fields, { add, remove }) => (
+                            <>
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <Space key={key} align="baseline">
+                                        <Form.Item
+                                            {...restField}
+                                            label="Name"
+                                            name={[name, 'name']}
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: 'Missing price',
+                                                },
+                                            ]}
+                                            initialValue={"phước"}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            label="Email"
+                                            name={[name, 'email']}
+                                            rules={[
+                                                {
+                                                    type: "email",
+                                                    required: true
+                                                },
+                                            ]}
+                                            initialValue={"phuoc.t.luong@gmail.com"}
+                                        >
+                                            <Input addonAfter="@taptap.com.vn" />
+                                        </Form.Item>
+                                        <Form.Item
+                                            {...restField}
+                                            label="Phone"
+                                            name={[name, 'phone']}
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                },
+                                            ]}
+                                            initialValue={"0387527010"}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                        <MinusCircleOutlined onClick={() => remove(name)} />
+                                    </Space>
+                                ))}
 
-                            <Form.Item>
-                                <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                                    Add Person
-                                </Button>
-                            </Form.Item>
-                        </>
-                    )}
-                </Form.List>
-            </Form.Item>
+                                <Form.Item>
+                                    <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                        Add Person
+                                    </Button>
+                                </Form.Item>
+                            </>
+                        )}
+                    </Form.List>
+                </Form.Item>
 
-            {/* Alert bot */}
-            <Form.Item
-                label="Alert Bot"
-            >
-                <Space align="end">
-                    <Form.Item
-                        label="Bot Name"
-                        name={['nameBot']}
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Bot Name is require',
-                            },
-                        ]}
-                        initialValue={service.monitoring.alertBot.name}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Bot Endpoint"
-                        name={['botEndpoint']}
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Bot Endpoint is require',
-                            },
-                        ]}
-                        initialValue={service.monitoring.alertBot.botEndpoint}
-                    >
-                        <Input addonBefore="http://" />
-                    </Form.Item>
-                </Space>
-            </Form.Item>
-            <Divider></Divider>
-            <Form.Item
-                name={['domain']}
-                label="Domain"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-                initialValue={service.requirement.domain}
-            >
-                <Input addonBefore="http://" addonAfter=".taptap.com.vn" />
-            </Form.Item>
-            <Form.Item
-                name={['port']}
-                label="Port"
-                rules={[
-                    {
-                        required: true,
-                        type: 'number',
-                        min: 0,
-                        max: 99999,
-                    },
-                ]}
-                initialValue={service.requirement.port}
-            >
-                <InputNumber />
-            </Form.Item>
-            <Form.Item
-                name={['platform']}
-                label="Platform"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-                initialValue={service.requirement.platform}
-            >
-                <Input />
-            </Form.Item>
-            <Form.Item
-                name={['serviceDependencies']}
-                label="Service Dependencies"
-            >
-                <InputDependency service={service} serviceDependencies={serviceDependencies} setServiceDependencies={setServiceDependencies}></InputDependency>
-            </Form.Item>
-            <Divider></Divider>
-            <Form.Item
-                name={['infrastructure']}
-                label="Infrastructure"
-                initialValue={Object.keys(service.requirement.infrastructure).filter(value => {
-                    if (service.requirement.infrastructure[value] === true) {
-                        return value
-                    }
-                })}
-            >
-                <Checkbox.Group options={options} onChange={onChangeCheckBox} />
-            </Form.Item>
-            <Form.Item
-                name={"database"}
-                label="Database name"
-                rules={[
-                    {
-                        required: true
-                    },
-                ]}
-                initialValue={service.requirement.database.mongodb.dbName}
-            >
-                <Input addonBefore="mongodb" />
-            </Form.Item>
-            <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-                <Button type="primary" htmlType="submit">
-                    Save
-                </Button>
-            </Form.Item>
-        </Form >
+                {/* Alert bot */}
+                <Form.Item
+                    label="Alert Bot"
+                >
+                    <Space align="end">
+                        <Form.Item
+                            label="Bot Name"
+                            name={['nameBot']}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Bot Name is require',
+                                },
+                            ]}
+                            initialValue={service.monitoring.alertBot.name}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Bot Endpoint"
+                            name={['botEndpoint']}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Bot Endpoint is require',
+                                },
+                            ]}
+                            initialValue={service.monitoring.alertBot.botEndpoint}
+                        >
+                            <Input addonBefore="http://" />
+                        </Form.Item>
+                    </Space>
+                </Form.Item>
+                <Divider></Divider>
+                <Form.Item
+                    name={['domain']}
+                    label="Domain"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                    initialValue={service.requirement.domain}
+                >
+                    <Input addonBefore="http://" addonAfter=".taptap.com.vn" />
+                </Form.Item>
+                <Form.Item
+                    name={['port']}
+                    label="Port"
+                    rules={[
+                        {
+                            required: true,
+                            type: 'number',
+                            min: 0,
+                            max: 99999,
+                        },
+                    ]}
+                    initialValue={service.requirement.port}
+                >
+                    <InputNumber />
+                </Form.Item>
+                <Form.Item
+                    name={['platform']}
+                    label="Platform"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                    initialValue={service.requirement.platform}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    name={['serviceDependencies']}
+                    label="Service Dependencies"
+                >
+                    <InputDependency service={service} serviceDependencies={serviceDependencies} setServiceDependencies={setServiceDependencies}></InputDependency>
+                </Form.Item>
+                <Divider></Divider>
+                <Form.Item
+                    name={['infrastructure']}
+                    label="Infrastructure"
+                    initialValue={Object.keys(service.requirement.infrastructure).filter(value => {
+                        if (service.requirement.infrastructure[value] === true) {
+                            return value
+                        }
+                    })}
+                >
+                    <Checkbox.Group options={options} onChange={onChangeCheckBox} />
+                </Form.Item>
+                <Form.Item
+                    name={"database"}
+                    label="Database name"
+                    rules={[
+                        {
+                            required: true
+                        },
+                    ]}
+                    initialValue={service.requirement.database.mongodb.dbName}
+                >
+                    <Input addonBefore="mongodb" />
+                </Form.Item>
+                <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+                    <Button type="primary" htmlType="submit">
+                        Save
+                    </Button>
+                </Form.Item>
+            </Form >
+        </>
     )
 }
