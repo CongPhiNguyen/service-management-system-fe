@@ -27,7 +27,6 @@ const sampleData = `{
       { "name": "rating-service" },
       { "name": "orc-engine-service" }
     ],
-    "ownDependencies" : [],
     "infrastructure": {
       "java": true,
       "mongodb": true,

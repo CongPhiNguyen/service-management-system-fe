@@ -1,0 +1,77 @@
+[
+  {
+    "serviceName": "Service-LTP1111",
+    "author": "phuoc.t.luong",
+    "authorizedPerson": "phuoc.t.luong",
+    "isPublic": "public",
+    "version": "14/09/2022 build 5",
+    "endpointPublicUrl": "abc-public.taptap.com.vn",
+    "endpointPrivateUrl": "abc-public.taptap.com.vn",
+    "nameBot": "youtube",
+    "botEndpoint": "telegram.com.vn",
+    "domain": "phuoc.t.luong",
+    "port": 8080,
+    "platform": "Java",
+    "serviceDependencies": ["Service-LTP-A"],
+    "infrastructure": ["java", "mongodb", "redis"],
+    "database": "mongodb-nameLTP"
+  },
+  {
+    "alertTo": [
+      {
+        "name": "{person_name}",
+        "email": "{person_email}",
+        "phone": "{person_phone_number}"
+      }
+    ],
+    "authorizedPerson": "{authorized_person_email}",
+    "author": "{your_email}",
+    "domain": "https://event-broker.taptap.com.vn",
+    "endpointPrivateUrl": "{internal_domain_access}/health",
+    "endpointPublicUrl": "https://event-broker.taptap.com.vn/health",
+    "infrastructure": {
+      "java": true,
+      "mongodb": true,
+      "redis": true,
+      "hazelcast": true,
+      "kafka": true,
+      "elasticSearch": false,
+      "nodejs": false
+    },
+    "isPublic": false,
+    "botEndpoint": "https://telegram....",
+    "nameBot": "telegram",
+    "platform": "java",
+    "port": "xxx",
+    "serviceDependencies": [
+      { "name": "rating-service" },
+      { "name": "orc-engine-service" }
+    ],
+    "serviceName": "core-event-broker-service",
+    "version": "2021.05.22 build 1"
+  },
+  {
+    "serviceName": "Service-LTP1111",
+    "author": "phuoc.t.luong",
+    "authorizedPerson": "phuoc.t.luong",
+    "isPublic": "public",
+    "version": "14/09/2022 build 5",
+    "endpointPublicUrl": "abc-public.taptap.com.vn",
+    "endpointPrivateUrl": "abc-public.taptap.com.vn",
+    "alertTo": [
+      {
+        "name": "phước",
+        "email": "phuoc.t.luong@gmail.com",
+        "phone": "0387527010"
+      }
+    ],
+    "nameBot": "youtube",
+    "botEndpoint": "telegram.com.vn",
+    "domain": "phuoc.t.luong",
+    "port": 8080,
+    "platform": "Java",
+    "serviceDependencies": ["Service-LTP-A"],
+    "infrastructure": ["java", "mongodb", "redis"],
+    "database": "mongodb-nameLTP"
+  }
+]

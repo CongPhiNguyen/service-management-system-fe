@@ -43,15 +43,6 @@ const HeaderMain = () => {
           >
             Search
           </NavLink>
-          <NavLink className={({ isActive }) => makeClass(isActive)} to="/test">
-            Test
-          </NavLink>
-          <NavLink
-            className={({ isActive }) => makeClass(isActive)}
-            to="/speech-2-text"
-          >
-            Speech to text
-          </NavLink>
         </div>
         {/* <Menu className="w-[1000px]" theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1} /> */}
       </Header>
