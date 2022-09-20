@@ -1,96 +1,101 @@
-import { UserOutlined } from '@ant-design/icons';
-import { AutoComplete, Input } from 'antd';
-import React, { useState, useEffect } from 'react';
-import { get } from "../../api/axios"
-import URL from "../../api/config"
-import RemoveAccents from '../../helper/RemoveAccents';
-const renderTitle = (title) => (
-    <span>
-        {title}
+import React from 'react'
+import Tree from 'react-d3-tree';
+import "./custom-tree.css"
+import { useState } from 'react';
+import { v4 } from "uuid";
+const orgChart = {
+    name: 'CEO',
+    attributes: {
+        id: "CEO"
+    },
+    children: [
+        {
+            name: 'Manager',
+            attributes: {
+                department: 'Production',
+                id: "123"
+            },
+            children: [
+                {
+                    name: 'Foreman',
+                    attributes: {
+                        department: 'Fabrication',
+                        id: "567"
+                    },
+                    children: [
+                        {
+                            attributes: {
+                                department: 'Fabrication',
+                                id: "gggg"
+                            },
+                            name: 'Worker',
+                        },
+                        {
+                            attributes: {
+                                department: 'Fabrication',
+                                id: "fsdas"
+                            },
+                            name: 'Worker',
+                            children: [
+                                {
+                                    attributes: {
+                                        department: 'Fabrication',
+                                        id: "423"
+                                    },
+                                    name: 'Worker',
+                                },
+                                {
+                                    attributes: {
+                                        id: "kk"
+                                    },
+                                    name: 'Worker',
+                                },
+                            ]
+                        },
+                    ],
+                },
+                {
+                    name: 'Foreman',
+                    attributes: {
+                        department: 'Assembly',
+                        id: "562227"
+                    },
+                    children: [
+                        {
+                            attributes: {
+                                department: 'Assembly',
+                                id: "hẻgwerg"
+                            },
+                            name: 'Worker',
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+};
 
-    </span>
-);
+export default function D3js() {
+    const [tree, setTree] = useState(orgChart)
 
-const renderItem = (title) => ({
-    value: title,
-    label: (
-        <div
-            style={{
-                display: 'flex',
-                justifyContent: 'start',
-            }}
-        >
-            {title}
-        </div>
-    ),
-});
+    const handleNodeClick = data => {
+        console.log(data);
 
-// const options = [
-//     {
-//         label: renderTitle('Libraries'),
-//         options: [renderItem('AntDesign'), renderItem('AntDesign UI')],
-//     },
-//     {
-//         label: renderTitle('Solutions'),
-//         options: [renderItem('AntDesign UI FAQ'), renderItem('AntDesign FAQ')],
-//     },
-//     {
-//         label: renderTitle('Articles'),
-//         options: [renderItem('AntDesign design language')],
-//     },
-// ];
-
-const App = () => {
-    const [allUser, setAllUser] = useState([])
-    const [options, setOptions] = useState([])
-
-    useEffect(() => {
-        get(URL.URL_GET_ALL_EMAIL)
-            .then(res => {
-                setAllUser = setAllUser(res.data.users)
-            }).catch(err => {
-                console.log(err);
-            })
-    }, [])
-
-    const handleChange = (e) => {
-        const results = []
-        if (e.target.value.length === 0) {
-            setOptions([])
-        } else {
-            allUser.forEach(user => {
-                if ((user.email.includes(e.target.value))) {
-                    if (results.length < 3) {
-                        results.push({
-                            label: renderTitle(user.name),
-                            options: [renderItem(user.email)],
-                        });
-                    } else {
-                        return
-                    }
-                }
-            })
-            console.log(results)
-            setOptions(results)
-        }
     }
 
     return (
-        <AutoComplete
-            popupClassName="certain-category-search-dropdown"
-            dropdownMatchSelectWidth={500}
-            style={{
-                width: 250,
-            }}
-            options={options}
-        >
-            <Input size="small" onChange={handleChange} placeholder="input here" />
-        </AutoComplete>
+        <div id="treeWrapper" className='mt-[50px] ml-[50px]' style={{ width: '100em', height: '50em', border: '1px solid black' }}>
+            <Tree
+                data={tree}
+                rootNodeClassName="node__root"
+                branchNodeClassName="node__branch"
+                leafNodeClassName="node__leaf"
+                orientation='vertical'
+                zoomable={true}
+                zoom={0.5}
+                translate={{ x: 300, y: 100 }}
+                onNodeClick={handleNodeClick}
+            />
+        </div>
     )
-
 }
-
-
-
-
-export default App;

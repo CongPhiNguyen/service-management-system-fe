@@ -7,6 +7,8 @@ import {
   Button,
   Modal,
   message,
+  Typography,
+  List
 } from "antd";
 import React, { useEffect, useState } from "react";
 import {
@@ -22,7 +24,7 @@ import MainDisplay from "../../display/MainDisplay";
 import NodeDisplay from "../../display/NodeDisplay";
 
 const { Header, Content, Footer, Sider } = Layout;
-
+const { Title } = Typography;
 const items2 = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
   (icon, index) => {
     const key = String(index + 1);
@@ -55,15 +57,31 @@ export default function MainPage() {
     const getAllService = () => {
       getFix(URL.URL_GET_SERVICE_LIST, {})
         .then((data) => {
-          console.log("data", data);
           setCurrentServiceList(data.data.services);
         })
         .catch((err) => {
-          console.log("err", err);
+          message.error(err.message)
         });
     };
     getAllService();
   }, []);
+  const [arrServiceNameAndId, setArrServiceNameAndId] = useState([])
+  useEffect(() => {
+    const arrDependencies = [];
+    for (let i = 0; i < currentServiceList.length; i++) {
+      if (
+        currentSelectedService.requirement.serviceDependencies.includes(
+          currentServiceList[i]._id
+        )
+      ) {
+        arrDependencies.push({
+          serviceName: currentServiceList[i].serviceName,
+          id: currentServiceList[i]._id
+        });
+      }
+    }
+    setArrServiceNameAndId(arrDependencies)
+  }, [currentSelectedService])
 
   const [arrDenpen, setArrDepen] = useState([]);
   const [arrOwnDepen, setArrOwnDepen] = useState([]);
@@ -97,6 +115,15 @@ export default function MainPage() {
     setIsModalOpen(true);
   };
 
+  const selectService = (serviceName) => {
+    console.log("FUC")
+    currentServiceList.forEach(service => {
+      if (service.serviceName === serviceName) {
+        setCurrentSelectedService(service)
+      }
+    })
+  }
+
   const handleOk = async () => {
     await get(URL.URL_DELETE_SERVICE + currentSelectedService._id)
       .then((res) => {
@@ -119,10 +146,12 @@ export default function MainPage() {
   const renderTreeDescription = (label, val) => {
     return (
       <Descriptions
-        contentStyle={{ fontSize: 10, marginBottom: 0 }}
-        labelStyle={{ fontSize: 10 }}
+        contentStyle={{ fontSize: 15, marginBottom: 0 }}
+        labelStyle={{ fontSize: 15, fontWeight: 700 }}
       >
-        <Descriptions.Item label={label}>{val}</Descriptions.Item>
+        <Descriptions.Item label={label}>
+          <a href={"http://" + val} target="_blank">{val}</a>
+        </Descriptions.Item>
       </Descriptions>
     );
   };
@@ -200,10 +229,11 @@ export default function MainPage() {
           )}
         </Content>
         <Sider
-          width={250}
+          width={350}
           theme="light"
           className="overflow-auto !w-[300px] bg-[white]"
         >
+          <Title level={2} className="text-center">Information</Title>
           <div className="flex justify-evenly mt-4">
             <Button
               onClick={() => {
@@ -214,6 +244,7 @@ export default function MainPage() {
               Sửa
             </Button>
             <Button
+              danger
               onClick={() => deleteService(currentSelectedService._id)}
               type="primary"
             >
@@ -226,34 +257,32 @@ export default function MainPage() {
               <React.Fragment>
                 <Descriptions
                   column={1}
-                  className="px-4 pt-8"
-                  labelStyle={{ fontSize: 12, fontWeight: 700 }}
-                  contentStyle={{ fontSize: 12 }}
+                  className="px-4  py-8"
+                  labelStyle={{ fontSize: 16, fontWeight: 700 }}
+                  contentStyle={{ fontSize: 16 }}
                 >
-                  <Descriptions.Item label="Service name">
+                  <Descriptions.Item className="py-4" label="Service name">
                     {currentSelectedService.serviceName}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Author">
-                    {currentSelectedService.author + ".taptap.com.vn"}
+                  <Descriptions.Item className="py-4" label="Author">
+                    {currentSelectedService.author + "@taptap.com.vn"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Authorized">
-                    {currentSelectedService.authorizedPerson + ".taptap.com.vn"}
+                  <Descriptions.Item className="py-4" label="Authorized">
+                    {currentSelectedService.authorizedPerson + "@taptap.com.vn"}
                   </Descriptions.Item>
-                  <Descriptions.Item label="Public">
+                  <Descriptions.Item className="py-4" label="Public">
                     {currentSelectedService?.isPublic?.toString()}
                   </Descriptions.Item>
-                  <Descriptions.Item label="version">
+                  <Descriptions.Item className="py-4" label="version">
                     {currentSelectedService.version}
                   </Descriptions.Item>
                 </Descriptions>
-
                 <Divider className="!mt-[0px]"></Divider>
-
                 <Tree
                   className="!mt-[-20px]"
                   treeData={[
                     {
-                      title: <span className="text-[12px]">Monitoring</span>,
+                      title: <span className="text-[16px] font-bold">Monitoring</span>,
                       key: "0",
                       children: [
                         {
@@ -274,9 +303,10 @@ export default function MainPage() {
                         },
                         {
                           title: (
-                            <span className="text-[10px] mt-[-10px]">
+                            <span className="text-[16px] font-bold mt-[-10px]">
                               Alert bot:{" "}
                               <a
+                                className="font-normal"
                                 href={
                                   currentSelectedService?.monitoring?.alertBot
                                     ?.botEndpoint
@@ -293,25 +323,23 @@ export default function MainPage() {
                         },
                         {
                           title: (
-                            <span className="text-[10px] mt-[-10px]">
-                              Alert to:{" "}
-                              {
-                                currentSelectedService?.monitoring?.alertTo
-                                  .length
-                              }
+                            <span className="text-[16px] font-bold mt-[-10px] flex">
+                              <div>
+                                Alert to:{" "}
+                              </div>
+                              <div className="pl-2">
+                                {
+                                  currentSelectedService?.monitoring?.alertTo.map(value => (
+                                    <div key={value} className="mb-2 font-normal">
+                                      <a>{value.email}</a>
+                                    </div>
+                                  ))
+                                }
+                              </div>
                             </span>
                           ),
                           selectable: false,
                           key: "0-3",
-                          children:
-                            currentSelectedService?.monitoring?.alertTo.map(
-                              (value, index) => {
-                                return {
-                                  title: renderTreeDescription("Email", value),
-                                  key: `0-2-{index}`,
-                                };
-                              }
-                            ),
                         },
                       ],
                     },
@@ -321,7 +349,7 @@ export default function MainPage() {
                 <Tree
                   treeData={[
                     {
-                      title: <span className="text-[12px]">Requirement</span>,
+                      title: <span className="text-[16px] font-bold">Requirement</span>,
                       key: "0",
                       children: [
                         {
@@ -347,13 +375,15 @@ export default function MainPage() {
                         },
                         {
                           title: (
-                            <span className="text-[10px]">
+                            <span className="text-[16px] font-bold mt-[-10px]">
                               Infrastructure:{" "}
                               {Object.keys(
                                 currentSelectedService?.requirement
                                   ?.infrastructure || {}
                               ).map((value) => {
-                                return <span>{value + " "}</span>;
+                                if (currentSelectedService?.requirement
+                                  ?.infrastructure[value] === true)
+                                  return <span className="font-normal text-red-400">{value + " "}</span>;
                               })}
                             </span>
                           ),
@@ -361,12 +391,14 @@ export default function MainPage() {
                         },
                         {
                           title: (
-                            <span className="text-[10px]">
+                            <span className="text-[16px] font-bold mt-[-10px]">
                               Database:{" "}
                               {Object.keys(
                                 currentSelectedService?.requirement?.database
                               ).map((val) => {
-                                return `${val} ::: ${currentSelectedService?.requirement?.database[val]?.dbName}`;
+                                return <span className="font-normal">
+                                  {val} ::: {currentSelectedService?.requirement?.database[val]?.dbName}
+                                </span>;
                               })}
                             </span>
                           ),
@@ -376,6 +408,18 @@ export default function MainPage() {
                     },
                   ]}
                 />
+                <Divider className="!mt-[0px]"></Divider>
+                <div className="px-[20px]">
+                  <List
+                    size="small"
+                    header={<div className="font-bold">List dependencies</div>}
+                    bordered
+                    // dataSource={["abc", "abc"]}
+                    dataSource={arrServiceNameAndId.length === 0 ? [] : arrServiceNameAndId.map(value => value.serviceName)}
+                    renderItem={item => <List.Item className="cursor-pointer" onClick={() => selectService(item)}>{item}</List.Item>}
+                  />
+                </div>
+
               </React.Fragment>
             )}
           {Object.keys(currentSelectedService).length === 0 && (
