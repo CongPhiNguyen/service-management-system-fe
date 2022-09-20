@@ -9,6 +9,8 @@ import { getFix } from "../../../api/axios";
 import URL from "../../../api/config";
 import { useNavigate } from "react-router-dom";
 import { get } from "../../../api/axios";
+import MainDisplay from "../../display/MainDisplay";
+import NodeDisplay from "../../display/NodeDisplay";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -87,21 +89,38 @@ export default function MainPage() {
             onClick={(value) => {
               // console.log("value", value);
               // setCurrentSelectedKey(value);
+              let isFind = false;
               currentServiceList.forEach((service) => {
                 if (service._id === value.key) {
                   setCurrentSelectedService(service);
+                  isFind = true;
                 }
               });
+              if (!isFind) {
+                setCurrentSelectedService({});
+              }
             }}
-            items={currentServiceList.map((value) => {
-              return {
-                key: value._id,
-                label: value.serviceName,
-              };
-            })}
+            items={[
+              {
+                key: "0",
+                label: "All",
+              },
+              ...currentServiceList.map((value) => {
+                return {
+                  key: value._id,
+                  label: value.serviceName,
+                };
+              }),
+            ]}
           />
         </Sider>
-        <Content>Kaiba</Content>
+        <Content>
+          {Object.keys(currentSelectedService).length === 0 ? (
+            <MainDisplay />
+          ) : (
+            <NodeDisplay nodeID={currentSelectedService._id} />
+          )}
+        </Content>
         <Sider
           width={250}
           theme="light"
@@ -146,114 +165,166 @@ export default function MainPage() {
               {currentSelectedService.version}
             </Descriptions.Item>
           </Descriptions>
+          {currentSelectedService !== {} &&
+            Object.keys(currentSelectedService).length !== 0 && (
+              <React.Fragment>
+                <Descriptions
+                  column={1}
+                  className="px-4 pt-8"
+                  labelStyle={{ fontSize: 12, fontWeight: 700 }}
+                  contentStyle={{ fontSize: 12 }}
+                >
+                  <Descriptions.Item label="Service name">
+                    {currentSelectedService.serviceName}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Author">
+                    {currentSelectedService.author + ".taptap.com.vn"}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Authorized">
+                    {currentSelectedService.authorizedPerson + ".taptap.com.vn"}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Public">
+                    {currentSelectedService?.isPublic?.toString()}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="version">
+                    {currentSelectedService.version}
+                  </Descriptions.Item>
+                </Descriptions>
 
-          <Divider className="!mt-[0px]"></Divider>
+                <Divider className="!mt-[0px]"></Divider>
 
-          <Tree
-            className="!mt-[-20px]"
-            treeData={[
-              {
-                title: <span className="text-[12px]">Monitoring</span>,
-                key: "0",
-                children: [
-                  {
-                    title: renderTreeDescription(
-                      "Endpoint PublicUrl",
-                      currentSelectedService?.monitoring?.endpointPublicUrl
-                    ),
-                    key: "0-0",
-                  },
-                  {
-                    title: renderTreeDescription(
-                      "Endpoint PrivateUrl",
-                      currentSelectedService?.monitoring?.endpointPrivateUrl
-                    ),
-                    key: "0-1",
-                  },
-                  {
-                    title: (
-                      <span className="text-[10px] mt-[-10px]">
-                        Alert bot:{" "}
-                        <a
-                          href={
-                            currentSelectedService?.monitoring?.alertBot
-                              ?.botEndpoint
-                          }
-                          onClick={() => console.log("abc")}
-                        >
-                          {currentSelectedService?.monitoring?.alertBot?.name}
-                        </a>
-                      </span>
-                    ),
-                  },
-                  {
-                    title: (
-                      <span className="text-[10px] mt-[-10px]">
-                        Alert to:{" "}
-                        {currentSelectedService?.monitoring?.alertTo.length}
-                      </span>
-                    ),
-                    selectable: false,
-                    key: "0-3",
-                    children: currentSelectedService?.monitoring?.alertTo.map(
-                      (value, index) => {
-                        return {
-                          title: renderTreeDescription("Email", value),
-                          key: `0-2-{index}`,
-                        };
-                      }
-                    ),
-                  },
-                ],
-              },
-            ]}
-          />
+                <Tree
+                  className="!mt-[-20px]"
+                  treeData={[
+                    {
+                      title: <span className="text-[12px]">Monitoring</span>,
+                      key: "0",
+                      children: [
+                        {
+                          title: renderTreeDescription(
+                            "Endpoint PublicUrl",
+                            currentSelectedService?.monitoring
+                              ?.endpointPublicUrl
+                          ),
+                          key: "0-0",
+                        },
+                        {
+                          title: renderTreeDescription(
+                            "Endpoint PrivateUrl",
+                            currentSelectedService?.monitoring
+                              ?.endpointPrivateUrl
+                          ),
+                          key: "0-1",
+                        },
+                        {
+                          title: (
+                            <span className="text-[10px] mt-[-10px]">
+                              Alert bot:{" "}
+                              <a
+                                href={
+                                  currentSelectedService?.monitoring?.alertBot
+                                    ?.botEndpoint
+                                }
+                                onClick={() => console.log("abc")}
+                              >
+                                {
+                                  currentSelectedService?.monitoring?.alertBot
+                                    ?.name
+                                }
+                              </a>
+                            </span>
+                          ),
+                        },
+                        {
+                          title: (
+                            <span className="text-[10px] mt-[-10px]">
+                              Alert to:{" "}
+                              {
+                                currentSelectedService?.monitoring?.alertTo
+                                  .length
+                              }
+                            </span>
+                          ),
+                          selectable: false,
+                          key: "0-3",
+                          children:
+                            currentSelectedService?.monitoring?.alertTo.map(
+                              (value, index) => {
+                                return {
+                                  title: renderTreeDescription("Email", value),
+                                  key: `0-2-{index}`,
+                                };
+                              }
+                            ),
+                        },
+                      ],
+                    },
+                  ]}
+                />
 
-          <Tree
-            treeData={[
-              {
-                title: <span className="text-[12px]">Requirement</span>,
-                key: "0",
-                children: [
-                  {
-                    title: renderTreeDescription(
-                      "Domain",
-                      currentSelectedService?.requirement?.domain
-                    ),
-                    key: "0-0",
-                  },
-                  {
-                    title: renderTreeDescription(
-                      "Port",
-                      currentSelectedService?.requirement?.port
-                    ),
-                    key: "0-1",
-                  },
-                  {
-                    title: renderTreeDescription(
-                      "Platform",
-                      currentSelectedService?.requirement?.platform
-                    ),
-                    key: "0-2",
-                  },
-                  {
-                    title: (
-                      <span className="text-[10px]">
-                        Infrastructure:{" "}
-                        {Object.keys(
-                          currentSelectedService?.requirement?.infrastructure ||
-                            {}
-                        ).map((value) => {
-                          return <span>{value + " "}</span>;
-                        })}
-                      </span>
-                    ),
-                    key: "0-4",
-                  },
-                ],
-              },
-            ]}
-          />
+                <Tree
+                  treeData={[
+                    {
+                      title: <span className="text-[12px]">Requirement</span>,
+                      key: "0",
+                      children: [
+                        {
+                          title: renderTreeDescription(
+                            "Domain",
+                            currentSelectedService?.requirement?.domain
+                          ),
+                          key: "0-0",
+                        },
+                        {
+                          title: renderTreeDescription(
+                            "Port",
+                            currentSelectedService?.requirement?.port
+                          ),
+                          key: "0-1",
+                        },
+                        {
+                          title: renderTreeDescription(
+                            "Platform",
+                            currentSelectedService?.requirement?.platform
+                          ),
+                          key: "0-2",
+                        },
+                        {
+                          title: (
+                            <span className="text-[10px]">
+                              Infrastructure:{" "}
+                              {Object.keys(
+                                currentSelectedService?.requirement
+                                  ?.infrastructure || {}
+                              ).map((value) => {
+                                return <span>{value + " "}</span>;
+                              })}
+                            </span>
+                          ),
+                          key: "0-4",
+                        },
+                        {
+                          title: (
+                            <span className="text-[10px]">
+                              Database:{" "}
+                              {Object.keys(
+                                currentSelectedService?.requirement?.database
+                              ).map((val) => {
+                                return `${val} ::: ${currentSelectedService?.requirement?.database[val]?.dbName}`;
+                              })}
+                            </span>
+                          ),
+                          key: "0-5",
+                        },
+                      ],
+                    },
+                  ]}
+                />
+              </React.Fragment>
+            )}
+          {Object.keys(currentSelectedService).length === 0 && (
+            <div>Select any service to see detail</div>
+          )}
         </Sider>
       </Layout>
     </div>

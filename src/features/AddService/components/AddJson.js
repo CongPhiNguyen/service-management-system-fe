@@ -76,26 +76,89 @@ export default function AddJson() {
       };
     }
 
-    if (val.version == undefined) {
-      return {
-        valid: false,
-        message: "Version is null",
-      };
-    }
+    const checkBlankWithZeroLength = (val, valueString) => {
+      if (val === undefined || val === null)
+        return {
+          valid: false,
+          message: `${valueString} is undefined`,
+        };
+      else
+        return {
+          valid: true,
+        };
+    };
 
-    if (val.monitoring?.endpointPublicUrl === undefined) {
-      return {
-        valid: false,
-        message: "Monitoring endpointPublicUrl is null",
-      };
-    }
+    const checkBlank = (val, valueString) => {
+      if (val === undefined || val === null || val.length === 0)
+        return {
+          valid: false,
+          message: `${valueString} is null or undefined`,
+        };
+      else
+        return {
+          valid: true,
+        };
+    };
 
-    if (val.monitoring?.endpointPrivateUrl === undefined) {
-      return {
-        valid: false,
-        message: "Monitoring endpointPrivateUrl is null",
-      };
-    }
+    let checkStep = checkBlank(val.version, "Version");
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(
+      val.monitoring?.endpointPublicUrl,
+      "Monitoring endpointPublicUrl"
+    );
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(
+      val.monitoring?.endpointPrivateUrl,
+      "Monitoring endpointPrivateUrl"
+    );
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlankWithZeroLength(
+      val.monitoring?.alertTo,
+      "Monitoring alert"
+    );
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(val.monitoring?.alertBot, "Monitoring alert bot");
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(val.requirement?.domain, "Service domain");
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(val.requirement?.port, "Service port");
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(val.requirement?.platform, "Service platform");
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(
+      val.requirement?.serviceDependencies,
+      "Service serviceDependencies"
+    );
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlankWithZeroLength(
+      val.requirement?.ownDependencies,
+      "Service ownDependencies"
+    );
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlankWithZeroLength(
+      val.requirement?.serviceDependencies,
+      "Service Dependencies"
+    );
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(
+      val.requirement?.infrastructure,
+      "Service Infrastructure"
+    );
+    if (!checkStep.valid) return checkStep;
+
+    checkStep = checkBlank(val.requirement?.database, "Service database");
+    if (!checkStep.valid) return checkStep;
 
     return {
       valid: true,
@@ -182,12 +245,7 @@ export default function AddJson() {
         <div>
           <AceEditor
             className="!w-[800px] !h-[300px]"
-            value={
-              globalJSONValue
-              //  === ""
-              //   ? ""
-              //   :
-            }
+            value={globalJSONValue}
             mode="json"
             theme="monokai"
             onChange={(value) => {
