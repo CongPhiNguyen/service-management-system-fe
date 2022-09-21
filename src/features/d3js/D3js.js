@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Spin } from 'antd';
 import Tree from 'react-d3-tree';
 import axios from 'axios';
 import './custom-tree.css';
@@ -40,10 +41,6 @@ const orgChart = {
         },
     ],
 };
-const containerStyles = {
-    width: "100vw",
-    height: "100vh"
-};
 
 const straightPathFunc = (linkDatum, orientation) => {
     const { source, target } = linkDatum;
@@ -52,11 +49,11 @@ const straightPathFunc = (linkDatum, orientation) => {
         : `M${source.x},${source.y}L${target.x},${target.y}`;
 };
 
-export default function OrgChartTree() {
+export default function OrgChartTree(props) {
     const [tree, setTree] = useState(null)
     const [dimensions, translate, containerRef] = useCenteredTree();
     useEffect(() => {
-        axios.get("http://localhost:5050/api/v1/service/get-tree/632a93de2924f07fc8924697")
+        axios.get(`http://localhost:5050/api/v1/service/get-tree/${props.id}`)
             .then(res => {
                 console.log(res.data)
                 setTree(res.data.tree)
@@ -64,7 +61,11 @@ export default function OrgChartTree() {
             .catch(err => {
                 console.log(err)
             })
-    }, [])
+    }, [props.id])
+
+    if (!tree) return <>
+        <Spin></Spin>
+    </>
 
     return (
         // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.

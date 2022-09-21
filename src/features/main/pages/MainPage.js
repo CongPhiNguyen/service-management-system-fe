@@ -150,7 +150,7 @@ export default function MainPage() {
     }
   };
 
-  const getSelectedKey = () => {};
+  const getSelectedKey = () => { };
 
   return (
     <div>

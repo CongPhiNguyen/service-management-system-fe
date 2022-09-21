@@ -1,8 +1,9 @@
+import { Button } from "antd";
 import React, { useEffect, useState } from "react";
 import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
 import { getFix } from "../../api/axios";
 import URL from "../../api/config";
-
+import D3js from "../d3js/D3js"
 const SCREEN_WIDTH = 1000;
 const SCREEN_HEIGHT = 600;
 
@@ -153,54 +154,67 @@ export default function NodeDisplay(props) {
       pointB.y + (20 * (pointA.y - pointB.y)) / longLine,
     ];
   };
-
+  const [change, setChange] = useState("tree")
   console.log("serviceNodes", serviceNodes);
 
   return (
-    <div>
-      <Stage width={1900} height={1600} className="w-[100%] h-[100%]">
-        <Layer>
-          {serviceNodes.map((val, index) => {
-            // console.log("val", val);
-            return (
-              <React.Fragment>
-                <Circle
-                  x={val.initX}
-                  y={val.initY}
-                  fill={val.color}
-                  radius={20}
-                  draggable={true}
-                  onClick={() => {
-                    props.changeCurrentService(val._id);
-                  }}
-                  onDragMove={(e) => {
-                    setServiceNodes((prev) => {
-                      return prev.map((currentVal) => {
-                        if (currentVal._id === val._id) {
-                          currentVal.x = e.target.x();
-                          currentVal.y = e.target.y();
-                        }
-                        return currentVal;
-                      });
-                    });
-                  }}
-                />
-                <Text x={val.x + 20} y={val.y} text={val.name} />
-              </React.Fragment>
-            );
-          })}
-          {serviceRelations.map((val, index) => {
-            if (val.pointA && val.pointB)
-              return (
-                <Arrow
-                  points={calculatePoint(val.pointA, val.pointB)}
-                  stroke="black"
-                  fill="black"
-                />
-              );
-          })}
-        </Layer>
-      </Stage>
+    <div style={{ background: "linear-gradient(0deg,#6a82fb,#fc5c7d)" }}>
+      <div className="flex justify-end pr-4 pt-4">
+        <Button onClick={() => {
+          change === "tree" ? setChange("network") : setChange("tree");
+        }}>{change === "tree" ? "network" : "tree"}</Button>
+      </div>
+      {
+        change === "tree" ? (
+          <D3js id={props.nodeID}></D3js>
+        ) : (
+          <Stage width={1900} height={1600} className="w-[100%] h-[100%]">
+            <Layer>
+              {serviceNodes.map((val, index) => {
+                // console.log("val", val);
+                return (
+                  <React.Fragment>
+                    <Circle
+                      x={val.initX}
+                      y={val.initY}
+                      fill={val.color}
+                      radius={20}
+                      draggable={true}
+                      onClick={() => {
+                        props.changeCurrentService(val._id);
+                      }}
+                      onDragMove={(e) => {
+                        setServiceNodes((prev) => {
+                          return prev.map((currentVal) => {
+                            if (currentVal._id === val._id) {
+                              currentVal.x = e.target.x();
+                              currentVal.y = e.target.y();
+                            }
+                            return currentVal;
+                          });
+                        });
+                      }}
+                    />
+                    <Text x={val.x + 20} y={val.y} text={val.name} />
+                  </React.Fragment>
+                );
+              })}
+              {serviceRelations.map((val, index) => {
+                if (val.pointA && val.pointB)
+                  return (
+                    <Arrow
+                      points={calculatePoint(val.pointA, val.pointB)}
+                      stroke="black"
+                      fill="black"
+                    />
+                  );
+              })}
+            </Layer>
+          </Stage>
+        )
+      }
+
+
     </div>
   );
 }
