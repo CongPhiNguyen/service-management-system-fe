@@ -14,7 +14,12 @@ const HeaderMain = () => {
 
   return (
     <Layout>
-      <Header className="header flex items-center" style={{ background: "#f7cc15" }}>
+      <Header className="header flex items-center !bg-[#f7cc15]">
+        <img
+          src="/logo_2.png"
+          alt=""
+          className="h-[50px] ml-[-40px] mr-[20px]"
+        />
         <NavLink to="/service-management">
           <img
             className="h-[40px]"
