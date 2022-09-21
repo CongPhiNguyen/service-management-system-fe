@@ -25,31 +25,9 @@ import NodeDisplay from "../../display/NodeDisplay";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { Title } = Typography;
-const items2 = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
-  (icon, index) => {
-    const key = String(index + 1);
-    return {
-      key: `sub${key}`,
-      label: `subnav ${key}`,
-      children: new Array(4).fill(null).map((_, j) => {
-        const subKey = index * 4 + j + 1;
-        return {
-          key: subKey,
-          label: `option${subKey}`,
-        };
-      }),
-    };
-  }
-);
-
-const defaultData = [];
-const x = 3;
-const y = 2;
-const z = 1;
 
 export default function MainPage() {
   const [currentServiceList, setCurrentServiceList] = useState([]);
-  const [currentSelectedKey, setCurrentSelectedKey] = useState(0);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
   const [currentDisplayService, setCurrentDisplayService] = useState({});
 
@@ -68,11 +46,12 @@ export default function MainPage() {
     getAllService();
   }, []);
   const [arrServiceNameAndId, setArrServiceNameAndId] = useState([]);
+
   useEffect(() => {
     const arrDependencies = [];
     for (let i = 0; i < currentServiceList.length; i++) {
       if (
-        currentSelectedService.requirement.serviceDependencies.includes(
+        currentDisplayService.requirement?.serviceDependencies?.includes(
           currentServiceList[i]._id
         )
       ) {
@@ -83,7 +62,7 @@ export default function MainPage() {
       }
     }
     setArrServiceNameAndId(arrDependencies);
-  }, [currentSelectedService]);
+  }, [currentDisplayService]);
 
   const [arrDenpen, setArrDepen] = useState([]);
   const [arrOwnDepen, setArrOwnDepen] = useState([]);
@@ -122,6 +101,7 @@ export default function MainPage() {
     currentServiceList.forEach((service) => {
       if (service.serviceName === serviceName) {
         setCurrentSelectedService(service);
+        setCurrentDisplayService(service);
       }
     });
   };
@@ -170,6 +150,8 @@ export default function MainPage() {
     }
   };
 
+  const getSelectedKey = () => {};
+
   return (
     <div>
       <Modal
@@ -204,8 +186,10 @@ export default function MainPage() {
         <Sider className="!w-[200px] overflow-auto">
           <Menu
             mode="inline"
-            defaultSelectedKeys={currentServiceList[0]?._id}
-            // defaultOpenKeys={["sub1"]}
+            defaultSelectedKeys={"0"}
+            selectedKeys={
+              currentSelectedService._id ? currentSelectedService._id : "0"
+            }
             style={{ height: "100%" }}
             onClick={(value) => {
               // console.log("value", value);
@@ -214,11 +198,13 @@ export default function MainPage() {
               currentServiceList.forEach((service) => {
                 if (service._id === value.key) {
                   setCurrentSelectedService(service);
+                  setCurrentDisplayService(service);
                   isFind = true;
                 }
               });
               if (!isFind) {
                 setCurrentSelectedService({});
+                setCurrentDisplayService({});
               }
             }}
             items={[
@@ -237,9 +223,12 @@ export default function MainPage() {
         </Sider>
         <Content>
           {Object.keys(currentSelectedService).length === 0 ? (
-            <MainDisplay />
+            <MainDisplay changeCurrentService={changeCurrentDisplayService} />
           ) : (
-            <NodeDisplay nodeID={currentSelectedService._id} />
+            <NodeDisplay
+              changeCurrentService={changeCurrentDisplayService}
+              nodeID={currentSelectedService._id}
+            />
           )}
         </Content>
         <Sider
@@ -250,27 +239,27 @@ export default function MainPage() {
           <Title level={2} className="text-center">
             Information
           </Title>
-          <div className="flex justify-evenly mt-4">
-            <Button
-              onClick={() => {
-                navigate(`/edit-service/${currentSelectedService._id}`);
-              }}
-              type="primary"
-            >
-              Sửa
-            </Button>
-            <Button
-              danger
-              onClick={() => deleteService(currentSelectedService._id)}
-              type="primary"
-            >
-              Xóa
-            </Button>
-          </div>
 
-          {currentSelectedService !== {} &&
-            Object.keys(currentSelectedService).length !== 0 && (
+          {currentDisplayService !== {} &&
+            Object.keys(currentDisplayService).length !== 0 && (
               <React.Fragment>
+                <div className="flex justify-evenly mt-4">
+                  <Button
+                    onClick={() => {
+                      navigate(`/edit-service/${currentDisplayService._id}`);
+                    }}
+                    type="primary"
+                  >
+                    Sửa
+                  </Button>
+                  <Button
+                    danger
+                    onClick={() => deleteService(currentDisplayService._id)}
+                    type="primary"
+                  >
+                    Xóa
+                  </Button>
+                </div>
                 <Descriptions
                   column={1}
                   className="px-4  py-8"
@@ -278,19 +267,19 @@ export default function MainPage() {
                   contentStyle={{ fontSize: 16 }}
                 >
                   <Descriptions.Item className="py-4" label="Service name">
-                    {currentSelectedService.serviceName}
+                    {currentDisplayService.serviceName}
                   </Descriptions.Item>
                   <Descriptions.Item className="py-4" label="Author">
-                    {currentSelectedService.author + "@taptap.com.vn"}
+                    {currentDisplayService.author + "@taptap.com.vn"}
                   </Descriptions.Item>
                   <Descriptions.Item className="py-4" label="Authorized">
-                    {currentSelectedService.authorizedPerson + "@taptap.com.vn"}
+                    {currentDisplayService.authorizedPerson + "@taptap.com.vn"}
                   </Descriptions.Item>
                   <Descriptions.Item className="py-4" label="Public">
-                    {currentSelectedService?.isPublic?.toString()}
+                    {currentDisplayService?.isPublic?.toString()}
                   </Descriptions.Item>
                   <Descriptions.Item className="py-4" label="version">
-                    {currentSelectedService.version}
+                    {currentDisplayService.version}
                   </Descriptions.Item>
                 </Descriptions>
                 <Divider className="!mt-[0px]"></Divider>
@@ -308,15 +297,14 @@ export default function MainPage() {
                         {
                           title: renderTreeDescription(
                             "Endpoint PublicUrl",
-                            currentSelectedService?.monitoring
-                              ?.endpointPublicUrl
+                            currentDisplayService?.monitoring?.endpointPublicUrl
                           ),
                           key: "0-0",
                         },
                         {
                           title: renderTreeDescription(
                             "Endpoint PrivateUrl",
-                            currentSelectedService?.monitoring
+                            currentDisplayService?.monitoring
                               ?.endpointPrivateUrl
                           ),
                           key: "0-1",
@@ -328,13 +316,13 @@ export default function MainPage() {
                               <a
                                 className="font-normal"
                                 href={
-                                  currentSelectedService?.monitoring?.alertBot
+                                  currentDisplayService?.monitoring?.alertBot
                                     ?.botEndpoint
                                 }
                                 onClick={() => console.log("abc")}
                               >
                                 {
-                                  currentSelectedService?.monitoring?.alertBot
+                                  currentDisplayService?.monitoring?.alertBot
                                     ?.name
                                 }
                               </a>
@@ -346,7 +334,7 @@ export default function MainPage() {
                             <span className="text-[16px] font-bold mt-[-10px] flex">
                               <div>Alert to: </div>
                               <div className="pl-2">
-                                {currentSelectedService?.monitoring?.alertTo.map(
+                                {currentDisplayService?.monitoring?.alertTo.map(
                                   (value) => (
                                     <div
                                       key={value}
@@ -380,21 +368,21 @@ export default function MainPage() {
                         {
                           title: renderTreeDescription(
                             "Domain",
-                            currentSelectedService?.requirement?.domain
+                            currentDisplayService?.requirement?.domain
                           ),
                           key: "0-0",
                         },
                         {
                           title: renderTreeDescription(
                             "Port",
-                            currentSelectedService?.requirement?.port
+                            currentDisplayService?.requirement?.port
                           ),
                           key: "0-1",
                         },
                         {
                           title: renderTreeDescription(
                             "Platform",
-                            currentSelectedService?.requirement?.platform
+                            currentDisplayService?.requirement?.platform
                           ),
                           key: "0-2",
                         },
@@ -403,11 +391,11 @@ export default function MainPage() {
                             <span className="text-[16px] font-bold mt-[-10px]">
                               Infrastructure:{" "}
                               {Object.keys(
-                                currentSelectedService?.requirement
+                                currentDisplayService?.requirement
                                   ?.infrastructure || {}
                               ).map((value) => {
                                 if (
-                                  currentSelectedService?.requirement
+                                  currentDisplayService?.requirement
                                     ?.infrastructure[value] === true
                                 )
                                   return (
@@ -425,13 +413,13 @@ export default function MainPage() {
                             <span className="text-[16px] font-bold mt-[-10px]">
                               Database:{" "}
                               {Object.keys(
-                                currentSelectedService?.requirement?.database
+                                currentDisplayService?.requirement?.database
                               ).map((val) => {
                                 return (
                                   <span className="font-normal">
                                     {val} :::{" "}
                                     {
-                                      currentSelectedService?.requirement
+                                      currentDisplayService?.requirement
                                         ?.database[val]?.dbName
                                     }
                                   </span>
@@ -469,8 +457,8 @@ export default function MainPage() {
                 </div>
               </React.Fragment>
             )}
-          {Object.keys(currentSelectedService).length === 0 && (
-            <div>Select any service to see detail</div>
+          {Object.keys(currentDisplayService).length === 0 && (
+            <p className="text-center">Select any service to see detail</p>
           )}
         </Sider>
       </Layout>

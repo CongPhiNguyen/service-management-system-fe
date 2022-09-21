@@ -37,12 +37,6 @@ const HeaderMain = () => {
           >
             Add Service
           </NavLink>
-          <NavLink
-            className={({ isActive }) => makeClass(isActive)}
-            to="/search"
-          >
-            Search
-          </NavLink>
         </div>
         {/* <Menu className="w-[1000px]" theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1} /> */}
       </Header>
