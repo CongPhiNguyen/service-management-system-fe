@@ -7,7 +7,6 @@ const EditServicesPage = React.lazy(() => import("../features/EditService/pages/
 const AddServicesPage = React.lazy(() =>
   import("../features/AddService/pages/AddServicesPage")
 );
-const D3js = React.lazy(() => import("../features/d3js/D3js"))
 const Search = React.lazy(() => import("../features//search/Search.js"));
 const Home = React.lazy(() => import("../features//shared/pages/Home.js"));
 const Test = React.lazy(() => import("../features//search/Test.js"));
@@ -21,9 +20,7 @@ const publicRoute = [
     name: "Service Management",
     element: <ServiceManagement />,
   },
-  {
-    path: "/d3js", name: "D3js", element: <D3js />
-  }
+
 ];
 
 // Những route dùng khi đã đăng nhập

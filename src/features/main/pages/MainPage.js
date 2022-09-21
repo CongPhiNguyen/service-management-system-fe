@@ -192,8 +192,6 @@ export default function MainPage() {
             }
             style={{ height: "100%" }}
             onClick={(value) => {
-              // console.log("value", value);
-              // setCurrentSelectedKey(value);
               let isFind = false;
               currentServiceList.forEach((service) => {
                 if (service._id === value.key) {

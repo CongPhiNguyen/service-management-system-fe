@@ -108,7 +108,7 @@ export default function MainDisplay(props) {
 
   return (
     <div>
-      <Stage width={1900} height={1600} className="w-[100%] h-[100%]">
+      <Stage width={1900} height={1600} style={{ background: "linear-gradient(0deg,#6a82fb,#fc5c7d)" }} className="w-[100%] h-[100%]">
         <Layer>
           {serviceNodes.map((val, index) => {
             return (

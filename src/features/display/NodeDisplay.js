@@ -160,7 +160,7 @@ export default function NodeDisplay(props) {
   return (
     <div style={{ background: "linear-gradient(0deg,#6a82fb,#fc5c7d)" }}>
       <div className="flex justify-end pr-4 pt-4">
-        <Button onClick={() => {
+        <Button style={{ borderRadius: "4px", fontWeight: "600" }} className={"rounded-lg"} onClick={() => {
           change === "tree" ? setChange("network") : setChange("tree");
         }}>{change === "tree" ? "network" : "tree"}</Button>
       </div>

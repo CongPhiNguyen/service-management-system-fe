@@ -3,18 +3,18 @@ import { Layout } from "antd";
 import React from "react";
 const { Header } = Layout;
 
-const navItem = "px-3  inline-block mr-[1em] hover:opacity";
+const navItem = "px-3 inline-block mr-[1em] hover:opacity";
 const HeaderMain = () => {
   const navigate = useNavigate();
   const makeClass = (isActive) => {
     return isActive
-      ? `${navItem} bg-[#f7cc15] text-[black]`
+      ? `${navItem} bg-[#947a0d] text-[white]`
       : `${navItem} text-[white]`;
   };
 
   return (
     <Layout>
-      <Header className="header flex items-center">
+      <Header className="header flex items-center" style={{ background: "#f7cc15" }}>
         <NavLink to="/service-management">
           <img
             className="h-[40px]"
@@ -26,12 +26,14 @@ const HeaderMain = () => {
 
         <div className="left-nav ml-[50px]">
           <NavLink
+            style={{ fontWeight: "600", fontSize: "16px" }}
             className={({ isActive }) => makeClass(isActive)}
             to="/service-management"
           >
             Home
           </NavLink>
           <NavLink
+            style={{ fontWeight: "600", fontSize: "16px" }}
             className={({ isActive }) => makeClass(isActive)}
             to="/add-service"
           >

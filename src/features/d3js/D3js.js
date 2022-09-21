@@ -63,13 +63,13 @@ export default function OrgChartTree(props) {
             })
     }, [props.id])
 
-    if (!tree) return <>
+    if (!tree) return <div style={{ width: '100vw', height: '100vh' }}>
         <Spin></Spin>
-    </>
+    </div>
 
     return (
         // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
-        <div id="treeWrapper" ref={containerRef} style={{ width: '100vw', height: '100vh', background: "linear-gradient(0deg,#6a82fb,#fc5c7d)" }}>
+        <div id="treeWrapper" ref={containerRef} style={{ width: '100vw', height: '100vh' }}>
             <Tree
                 data={tree ? tree : orgChart}
                 orientation={"vertical"}
