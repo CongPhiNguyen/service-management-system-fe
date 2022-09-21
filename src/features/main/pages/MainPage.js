@@ -11,11 +11,7 @@ import {
   List,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import {
-  LaptopOutlined,
-  NotificationOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+
 import { getFix } from "../../../api/axios";
 import URL from "../../../api/config";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +19,7 @@ import { get } from "../../../api/axios";
 import MainDisplay from "../../display/MainDisplay";
 import NodeDisplay from "../../display/NodeDisplay";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Sider } = Layout;
 const { Title } = Typography;
 
 export default function MainPage() {

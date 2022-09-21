@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Navigate } from "react-router-dom";
 const ServiceManagement = React.lazy(() =>
   import("../features/main/pages/MainPage")
 );
@@ -30,7 +30,7 @@ const protectedRoute = [];
 const commonRoute = [
   { path: "/search", name: "Search", element: <Search /> },
   { path: "/test", name: "Search", element: <Test /> },
-  { path: "/", name: "Home", element: <Home /> },
+  { path: "/", name: "Home", element: < Navigate to="service-management" /> },
 ];
 
 // Route dùng cho manager

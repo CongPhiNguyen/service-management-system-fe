@@ -1,11 +1,10 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Layout } from "antd";
 import React from "react";
 const { Header } = Layout;
 
 const navItem = "px-3 inline-block mr-[1em] hover:opacity";
 const HeaderMain = () => {
-  const navigate = useNavigate();
   const makeClass = (isActive) => {
     return isActive
       ? `${navItem} bg-[#947a0d] text-[white]`
