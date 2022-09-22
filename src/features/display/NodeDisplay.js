@@ -173,7 +173,7 @@ export default function NodeDisplay(props) {
             Own Dependencies
           </Radio>
           <Radio className={"font-bold"} value={"2"}>
-            Service Dependencies
+            Dependencies
           </Radio>
         </Radio.Group>
         <Button
