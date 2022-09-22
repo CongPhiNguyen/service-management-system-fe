@@ -276,7 +276,9 @@ export default function EditServiceByForm() {
         <Divider></Divider>
         {/* Alert to */}
         <Form.Item label="Alert To">
-          <Form.List name={"alertTo"}>
+          <Form.List name={"alertTo"}
+            initialValue={service.monitoring.alertTo.map(value => value)}
+          >
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, ...restField }) => (

@@ -73,6 +73,7 @@ export default function AddServiceByForm() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState();
+  const [allUser, setAllUser] = useState([])
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -109,6 +110,12 @@ export default function AddServiceByForm() {
         .catch((err) => {
           message.error(err.message);
         });
+      get(URL.URL_GET_ALL_EMAIL)
+        .then(res => {
+          setAllUser(res.data.users)
+        }).catch(err => {
+          message.error(err.message)
+        })
     };
     getAllService();
   }, []);
@@ -166,11 +173,12 @@ export default function AddServiceByForm() {
           <Input />
         </Form.Item>
         {/* Author */}
-        <InputEmail name="author" label="Author"></InputEmail>
+        <InputEmail name="author" allUser={allUser} label="Author"></InputEmail>
         {/* Authoriza */}
         <InputEmail
           name="authorizedPerson"
           label="Authorized Person"
+          allUser={allUser}
         ></InputEmail>
         {/* scope */}
         <Form.Item
@@ -231,7 +239,9 @@ export default function AddServiceByForm() {
         <Divider></Divider>
         {/* Alert to */}
         <Form.Item label="Alert To">
-          <Form.List name={"alertTo"}>
+          <Form.List name={"alertTo"}
+
+          >
             {(fields, { add, remove }) => (
               <>
                 {fields.map(({ key, name, ...restField }) => (
@@ -251,18 +261,16 @@ export default function AddServiceByForm() {
                       <Input />
                     </Form.Item>
                     <Form.Item
-                      {...restField}
+                      // {...restField}
                       label="Email"
                       name={[name, "email"]}
                       rules={[
                         {
-                          type: "email",
                           required: true,
                         },
                       ]}
-                      initialValue={"phuoc.t.luong@gmail.com"}
                     >
-                      <Input addonAfter="@taptap.com.vn" />
+                      <Input placeholder="phuoc.t.luong" addonAfter="@taptap.com.vn" />
                     </Form.Item>
                     <Form.Item
                       {...restField}
