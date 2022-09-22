@@ -50,22 +50,40 @@ const straightPathFunc = (linkDatum, orientation) => {
 };
 
 export default function OrgChartTree(props) {
+    const [data, setData] = useState(null);
     const [tree, setTree] = useState(null)
     const [dimensions, translate, containerRef] = useCenteredTree();
     useEffect(() => {
         axios.get(`http://localhost:5050/api/v1/service/get-tree/${props.id}`)
             .then(res => {
-                console.log(res.data)
-                setTree(res.data.tree)
+                setData(res.data)
+                if (props.value === "1") {
+                    setTree(res.data.treeOwn)
+                } else {
+                    setTree(res.data.treeDepen)
+                }
             })
             .catch(err => {
                 console.log(err)
             })
     }, [props.id])
 
-    if (!tree) return <div style={{ width: '100vw', height: '100vh' }}>
+    useEffect(() => {
+        if (data)
+            if (props.value === "1") {
+                setTree(data.treeOwn)
+            } else {
+                setTree(data.treeDepen)
+            }
+    }, [props.value])
+
+    if (!data) return <div style={{ width: '100vw', height: '100vh' }}>
         <Spin></Spin>
     </div>
+
+    const handleClickNode = (node) => {
+        props.changeCurrentService(node.data.id)
+    }
 
     return (
         // `<Tree />` will fill width/height of its container; in this case `#treeWrapper`.
@@ -86,6 +104,7 @@ export default function OrgChartTree(props) {
                     nonSiblings: 2,
                     siblings: 2
                 }}
+                onNodeClick={handleClickNode}
             // pathFunc={straightPathFunc}
             />
         </div>
