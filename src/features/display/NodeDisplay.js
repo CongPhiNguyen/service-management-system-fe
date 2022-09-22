@@ -1,23 +1,28 @@
 import { Button } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
 import { Radio } from "antd";
 import { getFix } from "../../api/axios";
 import URL from "../../api/config";
 import D3js from "../d3js/D3js";
 const SCREEN_WIDTH = 1000;
-const SCREEN_HEIGHT = 600;
+// const SCREEN_HEIGHT = 600;
 
 export default function NodeDisplay(props) {
-  // console.log("props", props);
   const [value, setValue] = useState("1");
   const onChangeRadioChecked = (e) => {
-    console.log("radio checked", e.target.value);
     setValue(e.target.value);
   };
-  const [currentServiceList, setCurrentServiceList] = useState([]);
   const [serviceNodes, setServiceNodes] = useState([]);
   const [serviceRelations, setServiceRelations] = useState([]);
+  const convasRef = useRef(null);
+  const [currentCanvasState, setCurrentCanvasState] = useState({
+    stageScale: 1,
+    stageX: 0,
+    stageY: 0,
+  });
+  const [serviceNodesReverse, setServiceNodesReverse] = useState([]);
+  const [serviceRelationsReverse, setServiceRelationsReverse] = useState([]);
 
   const createServiceNodesTree = (depen, current) => {
     console.log("depen", depen);
@@ -94,6 +99,105 @@ export default function NodeDisplay(props) {
     setServiceNodes(serviceNodesTemp);
   };
 
+  const createServiceNodesTreeReverse = (depen, current) => {
+    console.log("depen", depen);
+    console.log("current", current);
+
+    let serviceNodesTemp = [];
+
+    serviceNodesTemp.push({
+      index: 0,
+      _id: current._id,
+      name: current.name,
+      x: SCREEN_WIDTH / 2,
+      y: 100 / 2,
+      initX: SCREEN_WIDTH / 2,
+      initY: 100 / 2,
+      color: randomColor(),
+      dependFor: depen.map((val) => val._id),
+    });
+
+    const makeDepenNode = (node, beginX, endX, depth) => {
+      let depenNodeRender = [];
+      let currentDepen = node.dependences;
+      console.log("currentDepen", currentDepen);
+      for (let i = 0; i < currentDepen.length; i++) {
+        depenNodeRender.push(
+          ...makeDepenNode(
+            currentDepen[i],
+            beginX + (i * (endX - beginX)) / currentDepen.length,
+            beginX + ((i + 1) * (endX - beginX)) / currentDepen.length,
+            depth + 1
+          )
+        );
+      }
+      // console.log("depenNodeRender", depenNodeRender);
+      return [
+        {
+          index: 0,
+          _id: node._id,
+          name: node.name,
+          x: beginX + (endX - beginX) / 2,
+          y: depth * 100 + 50,
+          initX: beginX + (endX - beginX) / 2,
+          initY: depth * 100 + 50,
+          color: randomColor(),
+          dependFor: node.dependences.map((val) => val._id),
+        },
+        ...depenNodeRender,
+      ];
+    };
+
+    for (let i = 0; i < depen.length; i++) {
+      console.log("depen", i, depen[i]);
+      serviceNodesTemp.push(
+        ...makeDepenNode(
+          depen[i],
+          0 + (i * (SCREEN_WIDTH - 0)) / depen.length,
+          0 + ((i + 1) * (SCREEN_WIDTH - 0)) / depen.length,
+          1
+        )
+      );
+    }
+
+    // console.log("serviceNodesTemp", serviceNodesTemp);
+    let setID = [];
+    serviceNodesTemp = serviceNodesTemp.filter((val) => {
+      if (setID.includes(val._id)) {
+        return false;
+      } else {
+        setID.push(val._id);
+        return true;
+      }
+    });
+    makeServiceRelationReverse(serviceNodesTemp);
+    setServiceNodesReverse(serviceNodesTemp);
+  };
+
+  const makeServiceRelationReverse = (serviceNodes) => {
+    // console.log("serviceNodes", serviceNodes);
+    const serviceRelationTemp = [];
+    // console.log("serviceNodes abc", serviceNodes);
+    const objectFind = {};
+    for (let i = 0; i < serviceNodes.length; i++) {
+      if (!objectFind[serviceNodes[i]._id])
+        objectFind[serviceNodes[i]._id] = serviceNodes[i];
+    }
+    console.log("objectFind", objectFind);
+
+    for (let i = 0; i < serviceNodes.length; i++) {
+      const dependFor = serviceNodes[i].dependFor;
+      for (let j = 0; j < dependFor.length; j++) {
+        console.log("dependFor[i]", dependFor[i]);
+        serviceRelationTemp.push({
+          pointA: objectFind[serviceNodes[i]._id],
+          pointB: objectFind[dependFor[j]],
+        });
+      }
+    }
+    setServiceRelationsReverse(serviceRelationTemp);
+  };
+
   const makeServiceRelation = (serviceNodes) => {
     console.log("serviceNodes", serviceNodes);
     const serviceRelationTemp = [];
@@ -115,7 +219,6 @@ export default function NodeDisplay(props) {
         });
       }
     }
-    console.log("serviceRelationTemp", serviceRelationTemp);
     setServiceRelations(serviceRelationTemp);
   };
 
@@ -137,9 +240,19 @@ export default function NodeDisplay(props) {
         });
     };
     getServiceTree();
+    const getServiceTreeReverse = () => {
+      getFix(URL.URL_GET_SERVICE_TREE, { id: props.nodeID })
+        .then((data) => {
+          if (data.data.success) {
+            createServiceNodesTreeReverse(data.data.depen, data.data.current);
+          }
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    };
+    getServiceTreeReverse();
   }, [props.nodeID]);
-
-  // console.log("serviceNodes", serviceNodes);
 
   const randomColor = () => {
     return `rgb(${randomIntFromRange(0, 255)},${randomIntFromRange(
@@ -161,9 +274,109 @@ export default function NodeDisplay(props) {
   };
   const [change, setChange] = useState("tree");
 
+  const exportPNG = () => {
+    function downloadURI(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    downloadURI(convasRef.current.toDataURL(), "graph");
+  };
+
+  const handleWheel = (e) => {
+    e.evt.preventDefault();
+
+    const scaleBy = 1.2;
+    const stage = e.target.getStage();
+    const oldScale = stage.scaleX();
+    const mousePointTo = {
+      x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
+      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
+    };
+
+    const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+    setCurrentCanvasState({
+      stageScale: newScale,
+      stageX:
+        -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+      stageY:
+        -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
+    });
+  };
+
+  const chooseServiceNodes = (val) => {
+    const currentServiceNodes =
+      val === "1" ? serviceNodes : serviceNodesReverse;
+    return currentServiceNodes.map((val) => {
+      return (
+        <React.Fragment>
+          <Circle
+            x={val.initX}
+            y={val.initY}
+            fill={val.color}
+            radius={20}
+            draggable={true}
+            onClick={() => {
+              props.changeCurrentService(val._id);
+            }}
+            onDragMove={(e) => {
+              setServiceNodes((prev) => {
+                return prev.map((currentVal) => {
+                  if (currentVal._id === val._id) {
+                    currentVal.x = e.target.x();
+                    currentVal.y = e.target.y();
+                  }
+                  return currentVal;
+                });
+              });
+            }}
+            onMouseEnter={(e) => {
+              const container = e.target.getStage().container();
+              container.style.cursor = "grab";
+            }}
+            onMouseLeave={(e) => {
+              const container = e.target.getStage().container();
+              container.style.cursor = "default";
+            }}
+          />
+          <Text x={val.x + 20} y={val.y} text={val.name} />
+        </React.Fragment>
+      );
+    });
+  };
+
+  const chooseServiceRelation = (val) => {
+    const currentServiceRelations =
+      val === "1" ? serviceRelations : serviceRelationsReverse;
+    return currentServiceRelations.map((val, index) => {
+      if (val.pointA && val.pointB)
+        return (
+          <Arrow
+            points={calculatePoint(val.pointA, val.pointB)}
+            stroke="black"
+            fill="black"
+          />
+        );
+    });
+  };
+
   return (
     <div>
       <div className="flex justify-between p-4">
+        {change === "network" && (
+          <Button
+            onClick={() => {
+              exportPNG();
+            }}
+          >
+            Download this graph
+          </Button>
+        )}
+
         <Radio.Group
           className="!flex !flex-col"
           onChange={onChangeRadioChecked}
@@ -193,65 +406,21 @@ export default function NodeDisplay(props) {
           changeCurrentService={props.changeCurrentService}
         ></D3js>
       ) : (
-        <Stage width={1900} height={1600} className="w-[100%] h-[100%]">
+        <Stage
+          width={1900}
+          height={1600}
+          className="w-[100%] h-[100%]"
+          ref={convasRef}
+          draggable={true}
+          onWheel={handleWheel}
+          scaleX={currentCanvasState.stageScale}
+          scaleY={currentCanvasState.stageScale}
+          x={currentCanvasState.stageX}
+          y={currentCanvasState.stageY}
+        >
           <Layer>
-            {serviceNodes.map((val, index) => {
-              // console.log("val", val);
-              return (
-                <React.Fragment>
-                  <Circle
-                    x={val.initX}
-                    y={val.initY}
-                    fill={val.color}
-                    radius={20}
-                    draggable={true}
-                    onClick={() => {
-                      props.changeCurrentService(val._id);
-                    }}
-                    onDragMove={(e) => {
-                      setServiceNodes((prev) => {
-                        return prev.map((currentVal) => {
-                          if (currentVal._id === val._id) {
-                            currentVal.x = e.target.x();
-                            currentVal.y = e.target.y();
-                          }
-                          return currentVal;
-                        });
-                      });
-                    }}
-                    onMouseEnter={(e) => {
-                      const container = e.target.getStage().container();
-                      container.style.cursor = "grab";
-                    }}
-                    onMouseLeave={(e) => {
-                      const container = e.target.getStage().container();
-                      container.style.cursor = "default";
-                    }}
-                  />
-                  <Text x={val.x + 20} y={val.y} text={val.name} />
-                </React.Fragment>
-              );
-            })}
-            {serviceRelations.map((val, index) => {
-              if (val.pointA && val.pointB)
-                return (
-                  <Arrow
-                    points={calculatePoint(val.pointA, val.pointB)}
-                    stroke="black"
-                    fill="black"
-                  />
-                );
-            })}
-            {serviceRelations.map((val, index) => {
-              if (val.pointA && val.pointB)
-                return (
-                  <Arrow
-                    points={calculatePoint(val.pointA, val.pointB)}
-                    stroke="black"
-                    fill="black"
-                  />
-                );
-            })}
+            {chooseServiceNodes(value)}
+            {chooseServiceRelation(value)}
           </Layer>
         </Stage>
       )}
