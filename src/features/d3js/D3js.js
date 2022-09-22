@@ -92,7 +92,7 @@ export default function OrgChartTree(props) {
                 data={tree ? tree : orgChart}
                 orientation={"vertical"}
                 translate={{ x: 700, y: 100 }}
-                transitionDuration={500}
+                transitionDuration={300}
                 enableLegacyTransitions={true}
                 zoomable={true}
                 // CSS

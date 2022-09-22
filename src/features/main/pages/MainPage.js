@@ -11,29 +11,28 @@ import {
   List,
 } from "antd";
 import React, { useEffect, useState } from "react";
-
 import { getFix } from "../../../api/axios";
 import URL from "../../../api/config";
 import { useNavigate } from "react-router-dom";
 import { get } from "../../../api/axios";
 import MainDisplay from "../../display/MainDisplay";
 import NodeDisplay from "../../display/NodeDisplay";
+import RemoveAccents from "../../../helper/RemoveAccents";
 
 const { Content, Sider } = Layout;
 const { Title } = Typography;
-
 export default function MainPage() {
   const [currentServiceList, setCurrentServiceList] = useState([]);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
   const [currentDisplayService, setCurrentDisplayService] = useState({});
-
+  const [searchServices, setSearchService] = useState([])
   const navigate = useNavigate();
-
   useEffect(() => {
     const getAllService = () => {
       getFix(URL.URL_GET_SERVICE_LIST, {})
         .then((data) => {
           setCurrentServiceList(data.data.services);
+          setSearchService(data.data.services)
         })
         .catch((err) => {
           message.error(err.message);
@@ -93,7 +92,6 @@ export default function MainPage() {
   };
 
   const selectService = (serviceName) => {
-    console.log("FUC");
     currentServiceList.forEach((service) => {
       if (service.serviceName === serviceName) {
         setCurrentSelectedService(service);
@@ -146,7 +144,17 @@ export default function MainPage() {
     }
   };
 
-  const getSelectedKey = () => { };
+  const handleChangeSearch = (e) => {
+    if (e.target.value.length === 0) {
+      setSearchService(currentServiceList)
+    } else {
+      let arr = currentServiceList.filter(service => {
+        if (RemoveAccents(service.serviceName).includes(RemoveAccents(e.target.value)))
+          return service
+      })
+      setSearchService(arr)
+    }
+  }
 
   return (
     <div>
@@ -179,13 +187,17 @@ export default function MainPage() {
         <h3>Bạn có chắc chắn muốn xóa service {currentDisplayService.serviceName}?</h3>
       </Modal>
       <Layout className="h-[calc(100vh-64px)] overflow-hidden">
-        <Sider className="!w-[200px] overflow-auto">
+        <Sider width={250} className="!w-[200px] overflow-hidden">
+          <div className="bg-[#fff] flex justify-center">
+            <input onChange={handleChangeSearch} placeholder="Search service..." className="w-[80%] outline-none rounded-xl border-solid border-[1px] border-[#605b0f] p-2 px-4 my-2" type={"text"} />
+          </div>
           <Menu
             mode="inline"
             defaultSelectedKeys={"0"}
             selectedKeys={
               currentSelectedService._id ? currentSelectedService._id : "0"
             }
+            className="overflow-auto"
             style={{ height: "100%" }}
             onClick={(value) => {
               let isFind = false;
@@ -206,11 +218,11 @@ export default function MainPage() {
                 key: "0",
                 label: "All",
               },
-              ...currentServiceList.map((value) => {
+              ...searchServices.map((value) => {
                 return {
                   key: value._id,
-                  label: value.serviceName,
-                };
+                  label: value.serviceName
+                }
               }),
             ]}
           />
