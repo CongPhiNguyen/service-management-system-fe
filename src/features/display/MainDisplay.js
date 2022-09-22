@@ -8,7 +8,11 @@ export default function MainDisplay(props) {
   const [currentSelectNodeID, setCurrentSelectNodeID] = useState(null);
   const [serviceNodes, setServiceNodes] = useState([]);
   const [serviceRelations, setServiceRelations] = useState([]);
-
+  const [currentCanvasState, setCurrentCanvasState] = useState({
+    stageScale: 1,
+    stageX: 0,
+    stageY: 0,
+  });
   const convasRef = useRef(null);
 
   const createServiceNodes = (services) => {
@@ -86,9 +90,49 @@ export default function MainDisplay(props) {
     ];
   };
 
+  const exportPNG = () => {
+    function downloadURI(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    downloadURI(convasRef.current.toDataURL(), "graph");
+  };
+
+  const handleWheel = (e) => {
+    e.evt.preventDefault();
+
+    const scaleBy = 1.2;
+    const stage = e.target.getStage();
+    const oldScale = stage.scaleX();
+    const mousePointTo = {
+      x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
+      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
+    };
+
+    const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
+
+    setCurrentCanvasState({
+      stageScale: newScale,
+      stageX:
+        -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+      stageY:
+        -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
+    });
+  };
+
   return (
-    <div className="relative">
-      <Button className="!absolute">Download this graph</Button>
+    <div>
+      <Button
+        onClick={() => {
+          exportPNG();
+        }}
+      >
+        Download this graph
+      </Button>
       <Stage
         width={1900}
         height={1600}
@@ -96,6 +140,11 @@ export default function MainDisplay(props) {
         color="#f0f2f5"
         draggable={true}
         ref={convasRef}
+        onWheel={handleWheel}
+        scaleX={currentCanvasState.stageScale}
+        scaleY={currentCanvasState.stageScale}
+        x={currentCanvasState.stageX}
+        y={currentCanvasState.stageY}
       >
         <Layer>
           {serviceNodes.map((val, index) => {
