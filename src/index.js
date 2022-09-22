@@ -3,9 +3,20 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 
+import rootReducer from "./reducers/index"
+import { Provider } from "react-redux"
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk'
+import { composeWithDevTools } from 'redux-devtools-extension'
+
+const initiaState = {}
+const middleware = [thunk];
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={createStore(rootReducer, initiaState, composeWithDevTools(applyMiddleware(...middleware)))}>
+      <App />
+    </Provider>
   </React.StrictMode>
 );

@@ -7,10 +7,22 @@ const EditServicesPage = React.lazy(() => import("../features/EditService/pages/
 const AddServicesPage = React.lazy(() =>
   import("../features/AddService/pages/AddServicesPage")
 );
-const Search = React.lazy(() => import("../features//search/Search.js"));
-const Test = React.lazy(() => import("../features//search/Test.js"));
+
+const Login = React.lazy(() => import("../features/authentication/pages/Login"))
+
 // Những route chỉ truy xuất khi chưa đăng nhập
 const publicRoute = [
+  { path: "/:id", name: "Search", element: < Navigate to="/login" /> },
+  { path: "/", name: "Home", element: < Navigate to="login" /> },
+  {
+    path: "/login",
+    name: "Login",
+    element: <Login />
+  }
+];
+
+// Những route dùng khi đã đăng nhập
+const protectedRoute = [
   { path: "/edit-service/:id", name: "Edit Service", element: <EditServicesPage /> },
   { path: "/add-service", name: "Add Service", element: <AddServicesPage /> },
   {
@@ -18,19 +30,13 @@ const publicRoute = [
     name: "Service Management",
     element: <ServiceManagement />,
   },
-
-
+  { path: "/:id", name: "Search", element: < Navigate to="/service-management" /> },
+  { path: "/", name: "Home", element: < Navigate to="service-management" /> },
 ];
-
-// Những route dùng khi đã đăng nhập
-const protectedRoute = [];
 
 // route dùng cho mọi trường hợp
 const commonRoute = [
-  { path: "/search", name: "Search", element: <Search /> },
-  { path: "/test", name: "Search", element: <Test /> },
-  { path: "/:id", name: "Search", element: < Navigate to="/service-management" /> },
-  { path: "/", name: "Home", element: < Navigate to="service-management" /> },
+
 ];
 
 // Route dùng cho manager
