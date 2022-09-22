@@ -1,14 +1,15 @@
-import CheckableTag from "antd/lib/tag/CheckableTag";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
 import { getFix } from "../../api/axios";
 import URL from "../../api/config";
+import { Button } from "antd";
 
 export default function MainDisplay(props) {
-  const [currentServiceList, setCurrentServiceList] = useState([]);
   const [currentSelectNodeID, setCurrentSelectNodeID] = useState(null);
   const [serviceNodes, setServiceNodes] = useState([]);
   const [serviceRelations, setServiceRelations] = useState([]);
+
+  const convasRef = useRef(null);
 
   const createServiceNodes = (services) => {
     const serviceNodesTemp = services.map((val, index) => {
@@ -22,24 +23,20 @@ export default function MainDisplay(props) {
         dependFor: val.requirement.serviceDependencies,
       };
     });
-    // console.log("serviceNodesTemp", serviceNodesTemp);
     setServiceNodes(serviceNodesTemp);
     makeServiceRelation(serviceNodesTemp);
   };
 
   const makeServiceRelation = (serviceNodes) => {
     const serviceRelationTemp = [];
-    // console.log("serviceNodes abc", serviceNodes);
     const objectFind = {};
     for (let i = 0; i < serviceNodes.length; i++) {
       objectFind[serviceNodes[i]._id] = serviceNodes[i];
     }
-    // console.log("objectFind", objectFind);
 
     for (let i = 0; i < serviceNodes.length; i++) {
       const dependFor = serviceNodes[i].dependFor;
       for (let j = 0; j < dependFor.length; j++) {
-        // console.log(objectFind[serviceNodes[i]._id], objectFind[dependFor[j]]);
         console.log("a");
         serviceRelationTemp.push({
           pointA: objectFind[serviceNodes[i]._id],
@@ -57,25 +54,10 @@ export default function MainDisplay(props) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  // useEffect(() => {
-  //   const getServiceTree = () => {
-  //     getFix(URL.URL_GET_SERVICE_TREE, { id: "632822a9981b22e2611c0c68" })
-  //       .then((data) => {
-  //         console.log("data", data);
-  //       })
-  //       .catch((err) => {
-  //         console.log("err", err);
-  //       });
-  //   };
-  //   getServiceTree();
-  // }, []);
-
   useEffect(() => {
     const getAllService = () => {
       getFix(URL.URL_GET_SERVICE_LIST, {})
         .then((data) => {
-          console.log("data", data);
-          // setCurrentServiceList(data.data.services);
           createServiceNodes(data.data.services);
         })
         .catch((err) => {
@@ -84,8 +66,6 @@ export default function MainDisplay(props) {
     };
     getAllService();
   }, []);
-
-  // console.log("serviceNodes", serviceNodes);
 
   const randomColor = () => {
     return `rgb(${randomIntFromRange(0, 255)},${randomIntFromRange(
@@ -107,8 +87,16 @@ export default function MainDisplay(props) {
   };
 
   return (
-    <div>
-      <Stage width={1900} height={1600} style={{ background: "linear-gradient(0deg,#6a82fb,#fc5c7d)" }} className="w-[100%] h-[100%]">
+    <div className="relative">
+      <Button className="!absolute">Download this graph</Button>
+      <Stage
+        width={1900}
+        height={1600}
+        className="w-[100%] h-[100%] bg-[#f0f2f5]"
+        color="#f0f2f5"
+        draggable={true}
+        ref={convasRef}
+      >
         <Layer>
           {serviceNodes.map((val, index) => {
             return (
@@ -139,6 +127,14 @@ export default function MainDisplay(props) {
                         return val;
                       });
                     });
+                  }}
+                  onMouseEnter={(e) => {
+                    const container = e.target.getStage().container();
+                    container.style.cursor = "grab";
+                  }}
+                  onMouseLeave={(e) => {
+                    const container = e.target.getStage().container();
+                    container.style.cursor = "default";
                   }}
                 />
                 <Text x={val.x + 20} y={val.y} text={val.name} />

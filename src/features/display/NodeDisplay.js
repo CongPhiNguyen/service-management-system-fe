@@ -199,6 +199,14 @@ export default function NodeDisplay(props) {
                         });
                       });
                     }}
+                    onMouseEnter={(e) => {
+                      const container = e.target.getStage().container();
+                      container.style.cursor = "grab";
+                    }}
+                    onMouseLeave={(e) => {
+                      const container = e.target.getStage().container();
+                      container.style.cursor = "default";
+                    }}
                   />
                   <Text x={val.x + 20} y={val.y} text={val.name} />
                 </React.Fragment>
