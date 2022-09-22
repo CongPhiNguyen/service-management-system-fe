@@ -25,14 +25,14 @@ export default function MainPage() {
   const [currentServiceList, setCurrentServiceList] = useState([]);
   const [currentSelectedService, setCurrentSelectedService] = useState({});
   const [currentDisplayService, setCurrentDisplayService] = useState({});
-  const [searchServices, setSearchService] = useState([])
+  const [searchServices, setSearchService] = useState([]);
   const navigate = useNavigate();
   useEffect(() => {
     const getAllService = () => {
       getFix(URL.URL_GET_SERVICE_LIST, {})
         .then((data) => {
           setCurrentServiceList(data.data.services);
-          setSearchService(data.data.services)
+          setSearchService(data.data.services);
         })
         .catch((err) => {
           message.error(err.message);
@@ -57,7 +57,7 @@ export default function MainPage() {
       }
     }
     setArrServiceNameAndId(arrDependencies);
-  }, [currentDisplayService]);
+  }, [currentServiceList, currentDisplayService]);
 
   const [arrDenpen, setArrDepen] = useState([]);
   const [arrOwnDepen, setArrOwnDepen] = useState([]);
@@ -126,7 +126,7 @@ export default function MainPage() {
         labelStyle={{ fontSize: 15, fontWeight: 700 }}
       >
         <Descriptions.Item label={label}>
-          <a href={"http://" + val} target="_blank">
+          <a href={"http://" + val} target="_blank" rel="noreferrer">
             {val}
           </a>
         </Descriptions.Item>
@@ -146,15 +146,20 @@ export default function MainPage() {
 
   const handleChangeSearch = (e) => {
     if (e.target.value.length === 0) {
-      setSearchService(currentServiceList)
+      setSearchService(currentServiceList);
     } else {
-      let arr = currentServiceList.filter(service => {
-        if (RemoveAccents(service.serviceName).includes(RemoveAccents(e.target.value)))
-          return service
-      })
-      setSearchService(arr)
+      let arr = currentServiceList.filter((service) => {
+        if (
+          RemoveAccents(service.serviceName).includes(
+            RemoveAccents(e.target.value)
+          )
+        )
+          return true;
+        return false;
+      });
+      setSearchService(arr);
     }
-  }
+  };
 
   return (
     <div>
@@ -184,12 +189,19 @@ export default function MainPage() {
             </ul>
           </>
         )}
-        <h3>Bạn có chắc chắn muốn xóa service {currentDisplayService.serviceName}?</h3>
+        <h3>
+          Bạn có chắc chắn muốn xóa service {currentDisplayService.serviceName}?
+        </h3>
       </Modal>
       <Layout className="h-[calc(100vh-64px)] overflow-hidden">
         <Sider width={250} className="!w-[200px] overflow-hidden">
           <div className="bg-[#fff] flex justify-center">
-            <input onChange={handleChangeSearch} placeholder="Search service..." className="w-[80%] outline-none rounded-xl border-solid border-[1px] border-[#605b0f] p-2 px-4 my-2" type={"text"} />
+            <input
+              onChange={handleChangeSearch}
+              placeholder="Search service..."
+              className="w-[80%] outline-none rounded-xl border-solid border-[1px] border-[#605b0f] p-2 px-4 my-2"
+              type={"text"}
+            />
           </div>
           <Menu
             mode="inline"
@@ -221,8 +233,8 @@ export default function MainPage() {
               ...searchServices.map((value) => {
                 return {
                   key: value._id,
-                  label: value.serviceName
-                }
+                  label: value.serviceName,
+                };
               }),
             ]}
           />
@@ -346,7 +358,7 @@ export default function MainPage() {
                                       key={value}
                                       className="mb-2 font-normal"
                                     >
-                                      <a>{value.email}</a>
+                                      <p>{value.email}</p>
                                     </div>
                                   )
                                 )}
@@ -409,6 +421,7 @@ export default function MainPage() {
                                       {value + " "}
                                     </span>
                                   );
+                                return null;
                               })}
                             </span>
                           ),

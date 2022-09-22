@@ -5,7 +5,6 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { Input } from "antd";
 import URL from "../../../api/config";
-import "./authentication.scss";
 import { useNavigate } from "react-router-dom";
 import { setAccessToken } from "../../../helper/Cookies";
 import { setLoginState } from "../authenSlice";
@@ -37,14 +36,14 @@ export default function Login() {
     }
   };
   return (
-    <div className="body">
+    <div className="body-animation-login">
       <img
-        style={{ position: "fixed", top: "100px", left: "20px" }}
+        className="fixed top-[100px] left-[20px]"
         src="./login.png"
         alt="IMAGE "
       />
-      <form className="form">
-        <Typography.Title level={2}>Login</Typography.Title>
+      <form className="form items-center text-center !py-[30px] !px-[60px] bg-[white] rounded-[8px] relative min-w-[500px] shadow-2xl ">
+        <Typography.Title level={2}>LOGIN</Typography.Title>
         <Input
           size="large"
           onChange={(e) => {
