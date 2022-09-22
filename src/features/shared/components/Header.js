@@ -1,50 +1,72 @@
 import { NavLink } from "react-router-dom";
 import { Layout } from "antd";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoginState } from "../../authentication/authenSlice";
+import { setAccessToken } from "../../../helper/Cookies";
+
 const { Header } = Layout;
 
-const navItem = "px-3 inline-block mr-[1em] hover:opacity";
 const HeaderMain = () => {
+  const dispatch = useDispatch();
+  const navItem =
+    "px-3 inline-block mr-[1em] hover:opacity hover:text-[#f73965] font-[600] text-[16px] text-[white]";
+
   const makeClass = (isActive) => {
-    return isActive
-      ? `${navItem} bg-[#947a0d] text-[white]`
-      : `${navItem} text-[white]`;
+    return isActive ? `${navItem} bg-[#9e8725]` : `${navItem}`;
+  };
+
+  const userLogin = useSelector((state) => state.authenSlice.isLogin);
+
+  const logOut = () => {
+    setAccessToken("");
+    dispatch(setLoginState(false));
   };
 
   return (
     <Layout>
-      <Header className="header flex items-center !bg-[#f7cc15]">
-        <img
-          src="/logo_2.png"
-          alt=""
-          className="h-[50px] ml-[-40px] mr-[20px]"
-        />
-        <NavLink to="/service-management">
+      <Header className="header items-center !bg-[#f7cc15] flex justify-between">
+        <div className="left-nav flex">
           <img
-            className="h-[40px]"
-            alt="logo"
-            width={100}
-            src="/logo.png"
-          ></img>
-        </NavLink>
-
-        <div className="left-nav ml-[50px]">
-          <NavLink
-            style={{ fontWeight: "600", fontSize: "16px" }}
-            className={({ isActive }) => makeClass(isActive)}
-            to="/service-management"
-          >
-            Home
+            src="/logo_2.png"
+            alt=""
+            className="h-[50px] ml-[-40px] mr-[10px]"
+          />
+          <NavLink to="/service-management">
+            <img
+              className="h-[40px] mt-[10px] mr-[30px]"
+              alt="logo"
+              width={100}
+              src="/logo.png"
+            ></img>
           </NavLink>
-          <NavLink
-            style={{ fontWeight: "600", fontSize: "16px" }}
-            className={({ isActive }) => makeClass(isActive)}
-            to="/add-service"
-          >
-            Add Service
-          </NavLink>
+          {userLogin && (
+            <React.Fragment>
+              <NavLink
+                className={({ isActive }) => makeClass(isActive)}
+                to="/service-management"
+              >
+                Home
+              </NavLink>
+              <NavLink
+                className={({ isActive }) => makeClass(isActive)}
+                to="/add-service"
+              >
+                Add Service
+              </NavLink>
+            </React.Fragment>
+          )}
         </div>
-        {/* <Menu className="w-[1000px]" theme="dark" mode="horizontal" defaultSelectedKeys={['2']} items={items1} /> */}
+        <div className="right-nav flex">
+          {userLogin && (
+            <button
+              className="text-[white] hover:text-[#f73965] mr-[-20px] font-[600] text-[16px]"
+              onClick={() => logOut()}
+            >
+              Log out
+            </button>
+          )}
+        </div>
       </Header>
     </Layout>
   );

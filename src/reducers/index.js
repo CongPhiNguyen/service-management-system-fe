@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
-import userReducer from "./userReducer"
+import authenSlice from "../features/authentication/authenSlice";
 
 const rootReducer = combineReducers({
-    user: userReducer
-})
-export default rootReducer
+  authenSlice: authenSlice,
+});
+export default rootReducer;
