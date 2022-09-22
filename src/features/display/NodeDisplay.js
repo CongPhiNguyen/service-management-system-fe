@@ -1,6 +1,7 @@
 import { Button } from "antd";
 import React, { useEffect, useState } from "react";
 import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
+import { Radio } from "antd"
 import { getFix } from "../../api/axios";
 import URL from "../../api/config";
 import D3js from "../d3js/D3js"
@@ -9,7 +10,11 @@ const SCREEN_HEIGHT = 600;
 
 export default function NodeDisplay(props) {
   // console.log("props", props);
-
+  const [value, setValue] = useState("1");
+  const onChangeRadioChecked = (e) => {
+    console.log('radio checked', e.target.value);
+    setValue(e.target.value);
+  };
   const [currentServiceList, setCurrentServiceList] = useState([]);
   const [serviceNodes, setServiceNodes] = useState([]);
   const [serviceRelations, setServiceRelations] = useState([]);
@@ -155,18 +160,21 @@ export default function NodeDisplay(props) {
     ];
   };
   const [change, setChange] = useState("tree")
-  console.log("serviceNodes", serviceNodes);
 
   return (
-    <div style={{ background: "linear-gradient(0deg,#6a82fb,#fc5c7d)" }}>
-      <div className="flex justify-end pr-4 pt-4">
+    <div>
+      <div className="flex justify-between p-4">
+        <Radio.Group className="!flex !flex-col" onChange={onChangeRadioChecked} value={value}>
+          <Radio className={"font-bold"} value={"1"}>Own Dependencies</Radio>
+          <Radio className={"font-bold"} value={"2"}>Service Dependencies</Radio>
+        </Radio.Group>
         <Button style={{ borderRadius: "4px", fontWeight: "600" }} className={"rounded-lg"} onClick={() => {
           change === "tree" ? setChange("network") : setChange("tree");
         }}>{change === "tree" ? "network" : "tree"}</Button>
       </div>
       {
         change === "tree" ? (
-          <D3js id={props.nodeID}></D3js>
+          <D3js id={props.nodeID} value={value} changeCurrentService={props.changeCurrentService}></D3js>
         ) : (
           <Stage width={1900} height={1600} className="w-[100%] h-[100%]">
             <Layer>
@@ -213,8 +221,6 @@ export default function NodeDisplay(props) {
           </Stage>
         )
       }
-
-
     </div>
   );
 }

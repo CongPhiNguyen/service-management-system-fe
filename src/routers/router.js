@@ -8,9 +8,7 @@ const AddServicesPage = React.lazy(() =>
   import("../features/AddService/pages/AddServicesPage")
 );
 const Search = React.lazy(() => import("../features//search/Search.js"));
-const Home = React.lazy(() => import("../features//shared/pages/Home.js"));
 const Test = React.lazy(() => import("../features//search/Test.js"));
-
 // Những route chỉ truy xuất khi chưa đăng nhập
 const publicRoute = [
   { path: "/edit-service/:id", name: "Edit Service", element: <EditServicesPage /> },
@@ -21,6 +19,7 @@ const publicRoute = [
     element: <ServiceManagement />,
   },
 
+
 ];
 
 // Những route dùng khi đã đăng nhập
@@ -30,6 +29,7 @@ const protectedRoute = [];
 const commonRoute = [
   { path: "/search", name: "Search", element: <Search /> },
   { path: "/test", name: "Search", element: <Test /> },
+  { path: "/:id", name: "Search", element: < Navigate to="/service-management" /> },
   { path: "/", name: "Home", element: < Navigate to="service-management" /> },
 ];
 

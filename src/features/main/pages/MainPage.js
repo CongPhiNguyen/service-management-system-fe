@@ -69,14 +69,14 @@ export default function MainPage() {
     const arrOwnDependencies = [];
     for (let i = 0; i < currentServiceList.length; i++) {
       if (
-        currentSelectedService.requirement.serviceDependencies.includes(
+        currentDisplayService.requirement.serviceDependencies.includes(
           currentServiceList[i]._id
         )
       ) {
         arrDependencies.push(currentServiceList[i].serviceName);
       }
       if (
-        currentSelectedService.requirement.ownDependencies.includes(
+        currentDisplayService.requirement.ownDependencies.includes(
           currentServiceList[i]._id
         )
       ) {
@@ -103,10 +103,10 @@ export default function MainPage() {
   };
 
   const handleOk = async () => {
-    await get(URL.URL_DELETE_SERVICE + currentSelectedService._id)
+    await get(URL.URL_DELETE_SERVICE + currentDisplayService._id)
       .then((res) => {
         message.success(
-          `Xóa service ${currentSelectedService.serviceName} thành công`
+          `Xóa service ${currentDisplayService.serviceName} thành công`
         );
         setCurrentServiceList(res.data.services);
         setCurrentSelectedService({});
@@ -176,7 +176,7 @@ export default function MainPage() {
             </ul>
           </>
         )}
-        <h3>Bạn có chắc chắn muốn xóa service?</h3>
+        <h3>Bạn có chắc chắn muốn xóa service {currentDisplayService.serviceName}?</h3>
       </Modal>
       <Layout className="h-[calc(100vh-64px)] overflow-hidden">
         <Sider className="!w-[200px] overflow-auto">
