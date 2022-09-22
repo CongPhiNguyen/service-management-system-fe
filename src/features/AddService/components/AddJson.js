@@ -10,7 +10,6 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/theme-monokai";
 import { post, get } from "../../../api/axios";
 import URL from "../../../api/config";
-import { interpolate } from "d3";
 export default function AddJson() {
   // console.log(sampleData);
   const [currentSegment, setCurrentSegment] = useState("json_ide");
@@ -19,6 +18,10 @@ export default function AddJson() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isValidInputJSON, setIsValidInputJSON] = useState(false);
   const [allServices, setAllServices] = useState([]);
+
+  const [isOpenModalConfirmUseDefault, setOpenModalConfirmUseDefault] =
+    useState(false);
+  const [useDefaultClicked, setUseDefaultTimeClicked] = useState(false);
 
   useEffect(() => {
     const getAllService = async () => {
@@ -310,16 +313,6 @@ export default function AddJson() {
               }
             }}
           />
-          <div className="button-container mt-2 flex ">
-            <Button onClick={makeDefaultTemplate}>Use default</Button>
-            <Button
-              type="primary"
-              onClick={addService}
-              disabled={!isValidInputJSON}
-            >
-              Add service
-            </Button>
-          </div>
         </div>
       ) : currentSegment === "json_ide" ? (
         <div>
@@ -339,26 +332,53 @@ export default function AddJson() {
             highlightActiveLine={true}
             editorProps={{ $blockScrolling: true }}
           />
-          <div className="button-container mt-2 flex ">
-            <Button onClick={makeDefaultTemplate}>Use default</Button>
-            <Button
-              type="primary"
-              onClick={addService}
-              disabled={!isValidInputJSON}
-            >
-              Add service
-            </Button>
-          </div>
         </div>
       ) : null}
+      <div className="button-container mt-2 flex ">
+        <Button
+          onClick={() => {
+            if (useDefaultClicked) {
+              setOpenModalConfirmUseDefault(true);
+            } else {
+              makeDefaultTemplate();
+            }
+            setUseDefaultTimeClicked(true);
+          }}
+        >
+          Use default
+        </Button>
+        <Button
+          type="primary"
+          onClick={addService}
+          disabled={!isValidInputJSON}
+        >
+          Add service
+        </Button>
+      </div>
       <Modal
-        title="Basic Modal"
+        title="Thêm service"
         open={isModalOpen}
         onOk={addServiceHandle}
         onCancel={handleCancel}
         className="w-[400px]"
       >
-        <Typography.Text>Bạn có chắc chắn muốn thêm service?</Typography.Text>
+        <Typography.Text>Bạn có muốn thêm service?</Typography.Text>
+      </Modal>
+      <Modal
+        title="Xác nhận"
+        open={isOpenModalConfirmUseDefault}
+        onOk={() => {
+          makeDefaultTemplate();
+          setOpenModalConfirmUseDefault(false);
+        }}
+        onCancel={() => {
+          setOpenModalConfirmUseDefault(false);
+        }}
+        className="w-[400px]"
+      >
+        <Typography.Text>
+          Bạn có muốn xóa hết những thay đổi để đưa về template?
+        </Typography.Text>
       </Modal>
     </div>
   );
