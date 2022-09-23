@@ -4,6 +4,7 @@ import Tree from "react-d3-tree";
 import axios from "axios";
 import "./custom-tree.css";
 import { useCenteredTree } from "./helper";
+import URL from "../../api/config";
 // This is a simplified example of an org chart with a depth of 2.
 // Note how deeper levels are defined recursively via the `children` property.
 // const orgChart = {
@@ -55,7 +56,7 @@ export default function OrgChartTree(props) {
   const [dimensions, containerRef] = useCenteredTree();
   useEffect(() => {
     axios
-      .get(`http://localhost:5050/api/v1/service/get-tree/${props.id}`)
+      .get(URL.URL_GET_TREE_D3 + props.id)
       .then((res) => {
         setData(res.data);
         if (props.value === "1") {

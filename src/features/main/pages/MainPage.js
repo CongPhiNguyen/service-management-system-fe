@@ -26,6 +26,8 @@ export default function MainPage() {
   const [currentSelectedService, setCurrentSelectedService] = useState({});
   const [currentDisplayService, setCurrentDisplayService] = useState({});
   const [searchServices, setSearchService] = useState([]);
+  const [isMainDisplay, setIsMainDisplay] = useState(true);
+
   const navigate = useNavigate();
   useEffect(() => {
     const getAllService = () => {
@@ -96,6 +98,7 @@ export default function MainPage() {
       if (service.serviceName === serviceName) {
         setCurrentSelectedService(service);
         setCurrentDisplayService(service);
+        setIsMainDisplay(false);
       }
     });
   };
@@ -106,8 +109,10 @@ export default function MainPage() {
         message.success(
           `Xóa service ${currentDisplayService.serviceName} thành công`
         );
+        setSearchService(res.data.services);
         setCurrentServiceList(res.data.services);
         setCurrentSelectedService({});
+        setIsMainDisplay(true);
       })
       .catch((err) => {
         message.error(err.message);
@@ -160,6 +165,8 @@ export default function MainPage() {
       setSearchService(arr);
     }
   };
+
+  // console.log("currentSelectedService", currentSelectedService);
 
   return (
     <div>
@@ -217,12 +224,14 @@ export default function MainPage() {
                 if (service._id === value.key) {
                   setCurrentSelectedService(service);
                   setCurrentDisplayService(service);
+                  setIsMainDisplay(false);
                   isFind = true;
                 }
               });
               if (!isFind) {
                 setCurrentSelectedService({});
                 setCurrentDisplayService({});
+                setIsMainDisplay(true);
               }
             }}
             items={[
@@ -240,7 +249,7 @@ export default function MainPage() {
           />
         </Sider>
         <Content>
-          {Object.keys(currentSelectedService).length === 0 ? (
+          {isMainDisplay ? (
             <MainDisplay changeCurrentService={changeCurrentDisplayService} />
           ) : (
             <NodeDisplay
