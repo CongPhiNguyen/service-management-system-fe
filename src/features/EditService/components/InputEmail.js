@@ -30,7 +30,7 @@ const EmailInput = (props) => {
     useEffect(() => {
         get(URL.URL_GET_ALL_EMAIL)
             .then(res => {
-                setAllUser = setAllUser(res.data.users)
+                setAllUser(res.data.users)
             }).catch(err => {
                 console.log(err);
             })

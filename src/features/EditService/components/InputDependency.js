@@ -18,12 +18,12 @@ const InputDependency = (props) => {
 
   const [listService, setListService] = useState([]);
   useEffect(() => {
-    console.log(props.service)
+    console.log(props.service);
     const getAllService = async () => {
       get(URL.URL_GET_ALL_SERVICE)
         .then((res) => {
           let arr = res.data.services.map((name) => name.serviceName);
-          arr = arr.filter(name => name != props.service.serviceName)
+          arr = arr.filter((name) => name !== props.service.serviceName);
           setListService(arr);
         })
         .catch((err) => {
@@ -31,6 +31,7 @@ const InputDependency = (props) => {
         });
     };
     getAllService();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = (removedTag) => {
@@ -48,14 +49,14 @@ const InputDependency = (props) => {
     setInputValue(data);
   };
 
-  const handleInputConfirm = () => {
-    if (inputValue && props.serviceDependencies.indexOf(inputValue) === -1) {
-      const arr = [...props.serviceDependencies, inputValue];
-      props.setServiceDependencies(arr);
-    }
-    setInputVisible(false);
-    setInputValue("");
-  };
+  // const handleInputConfirm = () => {
+  //   if (inputValue && props.serviceDependencies.indexOf(inputValue) === -1) {
+  //     const arr = [...props.serviceDependencies, inputValue];
+  //     props.setServiceDependencies(arr);
+  //   }
+  //   setInputVisible(false);
+  //   setInputValue("");
+  // };
 
   const [options, setOptions] = useState([]);
 

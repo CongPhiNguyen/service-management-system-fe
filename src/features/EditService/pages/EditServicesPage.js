@@ -1,9 +1,7 @@
 import { Tabs, Layout, Typography } from "antd";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import EditJson from "../components/EditJson.js";
 import EditServiceByForm from "../components/EditServiceByForm";
-import { get } from "../../../api/axios";
-import URL from "../../../api/config";
 
 /* eslint-disable */
 const { Content } = Layout;

@@ -24,7 +24,7 @@ const InputDependency = (props) => {
           setListService(res.data.services.map((name) => name.serviceName));
         })
         .catch((err) => {
-          message.error(err.message)
+          message.error(err.message);
         });
     };
     getAllService();
@@ -45,14 +45,14 @@ const InputDependency = (props) => {
     setInputValue(data);
   };
 
-  const handleInputConfirm = () => {
-    if (inputValue && props.serviceDependencies.indexOf(inputValue) === -1) {
-      const arr = [...props.serviceDependencies, inputValue];
-      props.setServiceDependencies(arr);
-    }
-    setInputVisible(false);
-    setInputValue("");
-  };
+  // const handleInputConfirm = () => {
+  //   if (inputValue && props.serviceDependencies.indexOf(inputValue) === -1) {
+  //     const arr = [...props.serviceDependencies, inputValue];
+  //     props.setServiceDependencies(arr);
+  //   }
+  //   setInputVisible(false);
+  //   setInputValue("");
+  // };
 
   const [options, setOptions] = useState([]);
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+// eslint-disable-next-line
 import ace from "brace";
 import { JsonEditor as Editor } from "jsoneditor-react";
 import "jsoneditor-react/es/editor.min.css";
@@ -74,6 +75,7 @@ export default function AddJson() {
         message: "The authorized person email is not found or blank",
       };
     }
+    // eslint-disable-next-line
     const regexTestEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!regexTestEmail.test(val.author)) {
       return {
@@ -87,7 +89,7 @@ export default function AddJson() {
         message: "Authorized email format not valid",
       };
     }
-    if (val.isPublic == undefined) {
+    if (val.isPublic === undefined) {
       return {
         valid: false,
         message: "Service status is null",
@@ -235,6 +237,7 @@ export default function AddJson() {
         endpointPublicUrl: globalObjectValue.monitoring.endpointPublicUrl,
         infrastructure: Object.keys(
           globalObjectValue.requirement.infrastructure
+          // eslint-disable-next-line
         ).map((val) => {
           if (globalObjectValue.requirement.infrastructure[val] !== undefined) {
             return val;
@@ -246,6 +249,7 @@ export default function AddJson() {
         platform: globalObjectValue.requirement.platform,
         port: globalObjectValue.requirement.port,
         serviceDependencies:
+          // eslint-disable-next-line
           globalObjectValue.requirement.serviceDependencies.map((val) => {
             for (const service of allServices) {
               if (service.serviceName === val.name) return service.serviceName;

@@ -144,6 +144,7 @@ export default function NodeDisplayReverse(props) {
         });
     };
     getServiceTree();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.nodeID]);
 
   return (
@@ -193,6 +194,7 @@ export default function NodeDisplayReverse(props) {
               fill="black"
             />
           );
+        return null;
       })}
     </React.Fragment>
   );

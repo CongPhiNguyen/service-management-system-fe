@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
+import { Text, Circle, Arrow } from "react-konva";
 import { getFix } from "../../../api/axios";
 import URL from "../../../api/config";
 
@@ -145,6 +145,7 @@ export default function NodeDisplayNormal(props) {
         });
     };
     getServiceTree();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.nodeID]);
 
   return (
@@ -194,6 +195,7 @@ export default function NodeDisplayNormal(props) {
               fill="black"
             />
           );
+        return null;
       })}
     </React.Fragment>
   );

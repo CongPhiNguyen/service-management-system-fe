@@ -1,13 +1,11 @@
 import { Button } from "antd";
-import React, { useEffect, useState, useRef } from "react";
-import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
+import React, { useState, useRef } from "react";
+import { Stage, Layer } from "react-konva";
 import { Radio } from "antd";
-import { getFix } from "../../api/axios";
-import URL from "../../api/config";
 import D3js from "../d3js/D3js";
 import NodeDisplayNormal from "./components/NodeDisplayNormal";
 import NodeDisplayReverse from "./components/NodeDisplayReverse";
-const SCREEN_WIDTH = 1000;
+// const SCREEN_WIDTH = 1000;
 // const SCREEN_HEIGHT = 600;
 
 export default function NodeDisplay(props) {

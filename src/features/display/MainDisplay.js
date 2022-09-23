@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Stage, Layer, Rect, Text, Circle, Line, Arrow } from "react-konva";
+import { Stage, Layer, Text, Circle, Arrow } from "react-konva";
 import { getFix } from "../../api/axios";
 import URL from "../../api/config";
 import { Button } from "antd";
@@ -69,6 +69,7 @@ export default function MainDisplay(props) {
         });
     };
     getAllService();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const randomColor = () => {
@@ -199,6 +200,7 @@ export default function MainDisplay(props) {
                   fill={val.isSelectA || val.isSelectB ? "red" : "black"}
                 />
               );
+            return null;
           })}
         </Layer>
       </Stage>

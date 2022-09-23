@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+/* eslint-disable no-unused-vars */
 import ace from "brace";
+/* eslint-enable no-unused-vars */
 import { JsonEditor as Editor } from "jsoneditor-react";
 import "jsoneditor-react/es/editor.min.css";
-import sampleData from "./sampledata";
 import { Button, Segmented, Modal, Typography, message } from "antd";
 import "brace/mode/json";
 import "brace/theme/github";
@@ -37,6 +38,7 @@ export default function EditJson() {
     };
 
     getAllService();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log("allServices", allServices);
@@ -77,6 +79,7 @@ export default function EditJson() {
         });
     };
     getEditService();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkJSONValid = (text) => {
@@ -109,7 +112,7 @@ export default function EditJson() {
         message: "The authorized person email is not found or blank",
       };
     }
-    if (val.isPublic == undefined) {
+    if (val.isPublic === undefined) {
       return {
         valid: false,
         message: "Service status is null",
@@ -294,6 +297,7 @@ export default function EditJson() {
         endpointPublicUrl: globalObjectValue.monitoring.endpointPublicUrl,
         infrastructure: Object.keys(
           globalObjectValue.requirement.infrastructure
+          // eslint-disable-next-line
         ).map((val) => {
           if (globalObjectValue.requirement.infrastructure[val] !== undefined) {
             return val;

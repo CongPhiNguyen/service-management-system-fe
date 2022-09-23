@@ -7,7 +7,7 @@ import "antd/dist/antd.min.css";
 function App() {
   return (
     <BrowserRouter>
-      <div className="page-container">
+      <div className="page-container overflow-hidden">
         <div className="header-container">
           <HeaderMain />
         </div>

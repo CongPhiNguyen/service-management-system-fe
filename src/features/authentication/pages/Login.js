@@ -36,11 +36,11 @@ export default function Login() {
     }
   };
   return (
-    <div className="body-animation-login">
+    <div className="body-animation-login overflow-hidden">
       <img
         className="fixed top-[100px] left-[20px]"
         src="./login.png"
-        alt="IMAGE "
+        alt="logo taptap"
       />
       <form className="form items-center text-center !py-[30px] !px-[60px] bg-[white] rounded-[8px] relative min-w-[500px] shadow-2xl ">
         <Typography.Title level={2}>LOGIN</Typography.Title>
