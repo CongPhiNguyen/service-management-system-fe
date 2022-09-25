@@ -34,9 +34,8 @@ const HeaderMain = () => {
           />
           <NavLink to="/service-management">
             <img
-              className="h-[40px] mt-[10px] mr-[30px]"
+              className="h-[30px] mt-[15px] mr-[30px]"
               alt="logo"
-              width={100}
               src="/logo.png"
             ></img>
           </NavLink>
